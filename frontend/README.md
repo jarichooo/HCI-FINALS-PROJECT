@@ -1,16 +1,94 @@
-# React + Vite
+# EduCore — A Redesign of CSPC SIAS Online
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+EduCore is a student information and academic services portal designed as a redesign prototype of the CSPC SIAS Online system. The goal is to address the usability and navigation issues of the current system by providing a more intuitive, accessible, and user-centered experience for CSPC students.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Why EduCore?
 
-## React Compiler
+The original SIAS Online system has several pain points that make it difficult for students to navigate and use effectively. EduCore was built to directly address these issues.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Issue (SIAS Online) | Fix (EduCore) |
+|---|---|
+| No option to view login credentials | Password visibility toggle on login |
+| Blank dashboard after login | Welcoming dashboard with navigation hints |
+| No confirmation dialogs | Logout and action confirmation modals |
+| No onboarding for new users | Onboarding modal on first login |
+| No push notifications | Notification system for deadlines and updates |
+| No back buttons between pages | Back navigation available throughout |
+| Broken support button | Functional Contact Support modal |
+| No theme options | Light/Dark mode toggle |
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Features
+
+- **Student Login** — Secure login with password visibility toggle and error feedback
+- **Role Selection** — Choose between student and other roles on entry
+- **Dashboard** — Welcoming home screen with sidebar navigation
+- **Transactions** — Access pre-enlistment, enrollment, add/drop, assessment, payment, and more
+- **Reports** — View grade, enrollment, and assessment reports
+- **Notifications** — Push-down alerts for deadlines and enrollment status
+- **Settings** — Change password, access help, and contact support
+- **Theme Toggle** — Switch between light and dark mode
+
+---
+
+## Tech Stack
+
+- **Frontend:** React + Vite
+- **Styling:** Inline styles with CSS variables for theming
+- **State Management:** React useState (no backend — prototype only)
+- **Mock Data:** Hardcoded credentials via `mockData.js`
+
+---
+
+## Getting Started
+
+```bash
+# Clone the repo
+git clone <repo-url>
+cd <project-folder>
+
+# Install dependencies
+npm install
+
+# Run the dev server
+npm run dev
+```
+
+Open `http://localhost:5173` in your browser.
+
+### Test Credentials
+| Student ID | Password |
+|---|---|
+| 2021-00001 | password123 |
+
+---
+
+## Project Structure
+frontend/
+└── src/
+    ├── pages/
+    │   ├── RoleSelection.jsx
+    │   ├── StudentLogin.jsx
+    │   └── StudentDashboard.jsx
+    ├── components/
+    │   ├── Layout.jsx
+    │   └── FormCard.jsx
+    ├── context/
+    │   └── ThemeContext.jsx
+    ├── data/
+    │   └── mockData.js
+    └── App.jsx
+
+    ---
+
+## Group 3 — BSCS-3A
+
+- Alba, John Raymond S.
+- Barja, Joshua Jericho DL.
+- Moico, Mary Joyce N.
+- Muit, Ivy Pauline B.
+
+*CS 3215 - Human Computer Interaction | Camarines Sur Polytechnic Colleges*
