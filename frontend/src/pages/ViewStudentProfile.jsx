@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTheme } from "../context/ThemeContext";
 
 const BackIcon = () => (
@@ -8,23 +9,50 @@ const BackIcon = () => (
   </svg>
 );
 
-const ChevronIcon = () => (
+const ChevronIcon = ({ isOpen }) => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+    style={{ transform: isOpen ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.2s" }}>
     <polyline points="6 9 12 15 18 9" />
+  </svg>
+);
+
+const BookIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+  </svg>
+);
+
+const UserIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
   </svg>
 );
 
 export default function ViewStudentProfile({ user, onBack }) {
   const { isDark } = useTheme();
+  const [expandedSections, setExpandedSections] = useState({
+    personal: false,
+    addresses: false,
+    family: false,
+    education: false,
+    religious: false,
+    medical: false,
+    employment: false,
+  });
+
+  const toggleSection = (section) => {
+    setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
+  };
 
   return (
     <div style={styles.container}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Source+Sans+3:wght@400;600;700&display=swap');
-        
-        .profile-section { animation: slideDown 0.3s ease both; }
-        .profile-header { animation: fadeIn 0.3s ease; }
         
         @keyframes fadeIn {
           from { opacity: 0; }
@@ -34,116 +62,179 @@ export default function ViewStudentProfile({ user, onBack }) {
           from { opacity: 0; transform: translateY(-10px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        
+        .profile-container { animation: fadeIn 0.3s ease; }
+        .profile-header { animation: slideDown 0.3s ease; }
+        .profile-card { animation: slideDown 0.3s ease both; }
+        
+        .collapsible-btn {
+          transition: background 0.2s;
+        }
+        .collapsible-btn:hover { background: var(--bg-input); }
       `}</style>
 
       {/* Header */}
       <div style={styles.header} className="profile-header">
-        <button onClick={onBack} style={styles.backBtn}>
+        <button onClick={onBack} style={styles.backBtn} title="Go back">
           <BackIcon />
-          <span>Go back</span>
+          <span>Back</span>
         </button>
-        <h1 style={styles.title}>Student Profile</h1>
+        <div style={styles.headerContent}>
+          <h1 style={styles.title}>Student Profile</h1>
+          <p style={styles.subtitle}>View your academic enrollment information</p>
+        </div>
       </div>
 
       {/* Main Content */}
-      <div style={styles.content}>
-        {/* Enrollment Data Section */}
-        <div style={styles.section} className="profile-section">
-          <h2 style={styles.sectionTitle}>Enrollment Data</h2>
-          <div style={styles.grid}>
-            <div style={styles.field}>
-              <label style={styles.label}>Course</label>
-              <div style={styles.value}>BSCS</div>
+      <div style={styles.content} className="profile-container">
+        {/* Quick Info Cards */}
+        <div style={styles.infoGrid}>
+          <div style={styles.infoCard}>
+            <div style={styles.infoCardIcon}>
+              <BookIcon />
             </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Level</label>
-              <div style={styles.value}>College</div>
-            </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Dept</label>
-              <div style={styles.value}>CCS</div>
+            <div style={styles.infoCardContent}>
+              <p style={styles.infoCardLabel}>Course</p>
+              <p style={styles.infoCardValue}>BSCS</p>
             </div>
           </div>
-
-          <div style={styles.grid}>
-            <div style={styles.field}>
-              <label style={styles.label}>Curriculum</label>
-              <div style={styles.value}>BSCS 2023</div>
+          <div style={styles.infoCard}>
+            <div style={styles.infoCardIcon}>
+              <UserIcon />
             </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Year Level</label>
-              <div style={styles.value}>3</div>
-            </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Learner Ref. No</label>
-              <div style={styles.value}>40372915296</div>
+            <div style={styles.infoCardContent}>
+              <p style={styles.infoCardLabel}>Year Level</p>
+              <p style={styles.infoCardValue}>3rd Year</p>
             </div>
           </div>
-
-          <div style={styles.grid}>
-            <div style={styles.field}>
-              <label style={styles.label}>Entry Period</label>
-              <div style={styles.value}>23-1</div>
+          <div style={styles.infoCard}>
+            <div style={styles.infoCardIcon}>
+              <BookIcon />
             </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Entry Date</label>
-              <div style={styles.value}>Jun 20, 2023</div>
-            </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Exam Score</label>
-              <div style={styles.value}>97</div>
+            <div style={styles.infoCardContent}>
+              <p style={styles.infoCardLabel}>Status</p>
+              <p style={styles.infoCardValue}>Regular</p>
             </div>
           </div>
+        </div>
 
-          <div style={styles.divider} />
-
-          <h3 style={styles.subTitle}>Entry Data</h3>
-          <div style={styles.grid}>
-            <div style={styles.field}>
-              <label style={styles.label}>NSTP No</label>
-              <div style={styles.value}>C-05-395352-24</div>
-            </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Pref. Modality</label>
-              <div style={styles.value}>Face to Face</div>
-            </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Campus</label>
-              <div style={styles.value}>-</div>
-            </div>
+        {/* Main Section - Enrollment Data */}
+        <div style={styles.section} className="profile-card">
+          <div style={styles.sectionHeader}>
+            <h2 style={styles.sectionTitle}>Enrollment Information</h2>
+            <p style={styles.sectionDesc}>Your current academic and enrollment details</p>
           </div>
 
-          <div style={styles.grid}>
-            <div style={styles.field}>
-              <label style={styles.label}>Type</label>
-              <div style={styles.valueGroup}>
-                <span style={styles.badge}>New Student</span>
-                <span style={styles.badge}>Regular</span>
+          <div style={styles.fieldsContainer}>
+            {/* Row 1 */}
+            <div style={styles.fieldsRow}>
+              <div style={styles.fieldBlock}>
+                <label style={styles.label}>Course</label>
+                <p style={styles.displayValue}>BSCS</p>
+              </div>
+              <div style={styles.fieldBlock}>
+                <label style={styles.label}>Level</label>
+                <p style={styles.displayValue}>College</p>
+              </div>
+              <div style={styles.fieldBlock}>
+                <label style={styles.label}>Department</label>
+                <p style={styles.displayValue}>CCS</p>
               </div>
             </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Section No</label>
-              <div style={styles.value}>0</div>
+
+            {/* Row 2 */}
+            <div style={styles.fieldsRow}>
+              <div style={styles.fieldBlock}>
+                <label style={styles.label}>Curriculum</label>
+                <p style={styles.displayValue}>BSCS 2023</p>
+              </div>
+              <div style={styles.fieldBlock}>
+                <label style={styles.label}>Year Level</label>
+                <p style={styles.displayValue}>3</p>
+              </div>
+              <div style={styles.fieldBlock}>
+                <label style={styles.label}>Learner Ref. No</label>
+                <p style={styles.displayValue}>40372915296</p>
+              </div>
+            </div>
+
+            {/* Row 3 */}
+            <div style={styles.fieldsRow}>
+              <div style={styles.fieldBlock}>
+                <label style={styles.label}>Entry Period</label>
+                <p style={styles.displayValue}>23-1</p>
+              </div>
+              <div style={styles.fieldBlock}>
+                <label style={styles.label}>Entry Date</label>
+                <p style={styles.displayValue}>Jun 20, 2023</p>
+              </div>
+              <div style={styles.fieldBlock}>
+                <label style={styles.label}>Exam Score</label>
+                <p style={styles.displayValue}>97</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Entry Data Subsection */}
+          <div style={styles.subsection}>
+            <h3 style={styles.subTitle}>Entry Details</h3>
+            <div style={styles.fieldsContainer}>
+              <div style={styles.fieldsRow}>
+                <div style={styles.fieldBlock}>
+                  <label style={styles.label}>NSTP No</label>
+                  <p style={styles.displayValue}>C-05-395352-24</p>
+                </div>
+                <div style={styles.fieldBlock}>
+                  <label style={styles.label}>Preferred Modality</label>
+                  <p style={styles.displayValue}>Face to Face</p>
+                </div>
+                <div style={styles.fieldBlock}>
+                  <label style={styles.label}>Campus</label>
+                  <p style={styles.displayValue}>Main Campus</p>
+                </div>
+              </div>
+
+              <div style={styles.fieldsRow}>
+                <div style={styles.fieldBlock}>
+                  <label style={styles.label}>Student Type</label>
+                  <p style={styles.displayValue}>Regular</p>
+                </div>
+                <div style={styles.fieldBlock}>
+                  <label style={styles.label}>Section Number</label>
+                  <p style={styles.displayValue}>0</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Collapsible Sections */}
         {[
-          { title: "Personal Information" },
-          { title: "Addresses & Contacts" },
-          { title: "Family Background" },
-          { title: "Educational Background" },
-          { title: "Religious Background" },
-          { title: "Medical Information" },
-          { title: "Employment Records" },
+          { id: "personal", title: "Personal Information" },
+          { id: "addresses", title: "Addresses" },
+          { id: "family", title: "Family Background" },
+          { id: "education", title: "Education History" },
+          { id: "religious", title: "Religious Information" },
+          { id: "medical", title: "Medical Information" },
+          { id: "employment", title: "Employment Information" },
         ].map((section) => (
-          <div key={section.title} style={styles.section} className="profile-section">
-            <button style={styles.collapsibleBtn}>
-              <ChevronIcon />
-              <span>{section.title}</span>
+          <div key={section.id} style={styles.section} className="profile-card">
+            <button
+              onClick={() => toggleSection(section.id)}
+              style={styles.collapsibleBtn}
+              className="collapsible-btn"
+            >
+              <span style={styles.collapsibleTitle}>{section.title}</span>
+              <ChevronIcon isOpen={expandedSections[section.id]} />
             </button>
-            <p style={styles.emptyState}>No data available</p>
+
+            {expandedSections[section.id] && (
+              <div style={styles.collapsibleContent}>
+                <p style={styles.placeholderText}>
+                  Additional information for {section.title.toLowerCase()} will be displayed here.
+                </p>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -154,140 +245,203 @@ export default function ViewStudentProfile({ user, onBack }) {
 const styles = {
   container: {
     width: "100%",
-    maxWidth: "1000px",
+    maxWidth: "1100px",
     margin: "0 auto",
     animation: "fadeIn 0.3s ease",
   },
   header: {
     display: "flex",
-    alignItems: "center",
+    alignItems: "flex-start",
     gap: "16px",
     marginBottom: "32px",
-    paddingBottom: "16px",
-    borderBottom: "1.5px solid var(--border-light)",
+    paddingBottom: "24px",
+    borderBottom: "2px solid var(--border-light)",
   },
   backBtn: {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    background: "transparent",
+    background: "var(--bg-input)",
     border: "1.5px solid var(--border-light)",
     borderRadius: "8px",
-    padding: "8px 12px",
+    padding: "10px 14px",
     color: "var(--text-secondary)",
     cursor: "pointer",
     fontSize: "13px",
     fontWeight: 600,
     transition: "all 0.2s",
     fontFamily: "'Source Sans 3', sans-serif",
+    minWidth: "fit-content",
+  },
+  headerContent: {
+    flex: 1,
   },
   title: {
-    fontSize: "24px",
+    fontSize: "28px",
     fontFamily: "'DM Serif Display', serif",
     color: "var(--text-primary)",
+    margin: "0 0 4px 0",
+    transition: "color 0.25s",
+    fontWeight: 700,
+  },
+  subtitle: {
+    fontSize: "13px",
+    color: "var(--text-secondary)",
     margin: 0,
     transition: "color 0.25s",
+    fontFamily: "'Source Sans 3', sans-serif",
   },
   content: {
     display: "flex",
     flexDirection: "column",
     gap: "24px",
   },
+  infoGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+    gap: "16px",
+  },
+  infoCard: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    padding: "16px",
+    background: "var(--bg-surface)",
+    border: "1.5px solid var(--border-light)",
+    borderRadius: "10px",
+    transition: "all 0.25s",
+  },
+  infoCardIcon: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "40px",
+    height: "40px",
+    borderRadius: "8px",
+    background: "rgba(59, 130, 246, 0.1)",
+    color: "var(--primary)",
+    flexShrink: 0,
+  },
+  infoCardContent: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "2px",
+  },
+  infoCardLabel: {
+    fontSize: "11px",
+    fontWeight: 700,
+    color: "var(--text-secondary)",
+    textTransform: "uppercase",
+    margin: 0,
+    fontFamily: "'Source Sans 3', sans-serif",
+  },
+  infoCardValue: {
+    fontSize: "14px",
+    fontWeight: 600,
+    color: "var(--text-primary)",
+    margin: 0,
+    fontFamily: "'Source Sans 3', sans-serif",
+  },
   section: {
     background: "var(--bg-surface)",
     border: "1.5px solid var(--border-light)",
     borderRadius: "12px",
-    padding: "20px",
+    padding: "28px",
     transition: "all 0.25s",
   },
+  sectionHeader: {
+    marginBottom: "24px",
+    paddingBottom: "16px",
+    borderBottom: "1.5px solid var(--border-light)",
+  },
   sectionTitle: {
-    fontSize: "16px",
+    fontSize: "18px",
     fontWeight: 700,
     color: "var(--text-primary)",
-    margin: "0 0 16px 0",
+    margin: "0 0 6px 0",
     fontFamily: "'Source Sans 3', sans-serif",
     transition: "color 0.25s",
   },
-  subTitle: {
-    fontSize: "14px",
-    fontWeight: 700,
+  sectionDesc: {
+    fontSize: "12px",
     color: "var(--text-secondary)",
-    margin: "16px 0 12px 0",
-    textTransform: "uppercase",
-    letterSpacing: "0.05em",
+    margin: 0,
     fontFamily: "'Source Sans 3', sans-serif",
     transition: "color 0.25s",
   },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-    gap: "16px",
-    marginBottom: "12px",
+  fieldsContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "20px",
   },
-  field: {
+  fieldsRow: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+    gap: "16px",
+  },
+  fieldBlock: {
     display: "flex",
     flexDirection: "column",
     gap: "6px",
   },
   label: {
-    fontSize: "12px",
-    fontWeight: 600,
+    fontSize: "11px",
+    fontWeight: 700,
     color: "var(--text-secondary)",
     textTransform: "uppercase",
-    letterSpacing: "0.03em",
+    letterSpacing: "0.05em",
     fontFamily: "'Source Sans 3', sans-serif",
     transition: "color 0.25s",
   },
-  value: {
+  displayValue: {
     fontSize: "14px",
+    fontWeight: 600,
     color: "var(--text-primary)",
-    fontWeight: 500,
+    margin: 0,
+    fontFamily: "'Source Sans 3', sans-serif",
+  },
+  subsection: {
+    marginTop: "20px",
+    paddingTop: "20px",
+    borderTop: "1.5px solid var(--border-light)",
+  },
+  subTitle: {
+    fontSize: "13px",
+    fontWeight: 700,
+    color: "var(--text-secondary)",
+    margin: "0 0 16px 0",
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
     fontFamily: "'Source Sans 3', sans-serif",
     transition: "color 0.25s",
-  },
-  valueGroup: {
-    display: "flex",
-    gap: "8px",
-    flexWrap: "wrap",
-  },
-  badge: {
-    display: "inline-block",
-    padding: "4px 10px",
-    background: "var(--bg-input)",
-    borderRadius: "6px",
-    fontSize: "12px",
-    fontWeight: 600,
-    color: "var(--text-secondary)",
-    fontFamily: "'Source Sans 3', sans-serif",
-    transition: "all 0.25s",
-  },
-  divider: {
-    height: "1px",
-    background: "var(--border-light)",
-    margin: "16px 0",
-    transition: "background 0.25s",
   },
   collapsibleBtn: {
     width: "100%",
     display: "flex",
     alignItems: "center",
-    gap: "10px",
+    justifyContent: "space-between",
+    padding: "14px 0",
     background: "transparent",
     border: "none",
-    padding: "0",
-    fontSize: "14px",
-    fontWeight: 700,
     color: "var(--text-primary)",
     cursor: "pointer",
-    transition: "color 0.2s",
+    fontSize: "14px",
+    fontWeight: 600,
     fontFamily: "'Source Sans 3', sans-serif",
+    transition: "all 0.2s",
+  },
+  collapsibleTitle: {
     textAlign: "left",
   },
-  emptyState: {
+  collapsibleContent: {
+    paddingTop: "12px",
+    borderTop: "1.5px solid var(--border-light)",
+  },
+  placeholderText: {
     fontSize: "13px",
-    color: "var(--text-placeholder)",
-    margin: "12px 0 0 0",
+    color: "var(--text-secondary)",
+    margin: 0,
     fontFamily: "'Source Sans 3', sans-serif",
-    transition: "color 0.25s",
+    fontStyle: "italic",
   },
 };

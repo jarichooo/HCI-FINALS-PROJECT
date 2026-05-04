@@ -16,6 +16,15 @@ const CheckIcon = () => (
   </svg>
 );
 
+const AlertIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <line x1="12" y1="8" x2="12" y2="12" />
+    <line x1="12" y1="16" x2="12.01" y2="16" />
+  </svg>
+);
+
 export default function EditStudentProfile({ user, onBack }) {
   const { isDark } = useTheme();
   const [formData, setFormData] = useState({
@@ -30,7 +39,7 @@ export default function EditStudentProfile({ user, onBack }) {
     examScore: "97",
     nstpNo: "C-05-395352-24",
     prefModality: "Face to Face",
-    campus: "",
+    campus: "Main Campus",
     type: "Regular",
     sectionNo: "0",
   });
@@ -54,9 +63,6 @@ export default function EditStudentProfile({ user, onBack }) {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Source+Sans+3:wght@400;600;700&display=swap');
         
-        .profile-section { animation: slideDown 0.3s ease both; }
-        .profile-header { animation: fadeIn 0.3s ease; }
-        
         @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }
@@ -72,8 +78,16 @@ export default function EditStudentProfile({ user, onBack }) {
           100% { opacity: 0; transform: translateY(-20px); }
         }
         
-        .save-message {
-          animation: slideInSuccess 3s ease both;
+        .profile-container { animation: fadeIn 0.3s ease; }
+        .profile-header { animation: slideDown 0.3s ease; }
+        .profile-card { animation: slideDown 0.3s ease both; }
+        .save-message { animation: slideInSuccess 3s ease both; }
+        
+        input:focus {
+          outline: none !important;
+          border-color: var(--primary) !important;
+          background: var(--bg-input) !important;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
         }
       `}</style>
 
@@ -87,165 +101,187 @@ export default function EditStudentProfile({ user, onBack }) {
 
       {/* Header */}
       <div style={styles.header} className="profile-header">
-        <button onClick={onBack} style={styles.backBtn}>
+        <button onClick={onBack} style={styles.backBtn} title="Go back">
           <BackIcon />
-          <span>Go back</span>
+          <span>Back</span>
         </button>
-        <h1 style={styles.title}>Edit Student Profile</h1>
+        <div style={styles.headerContent}>
+          <h1 style={styles.title}>Edit Student Profile</h1>
+          <p style={styles.subtitle}>Update your academic enrollment information</p>
+        </div>
       </div>
 
       {/* Main Content */}
-      <div style={styles.content}>
-        {/* Enrollment Data Section */}
-        <div style={styles.section} className="profile-section">
-          <h2 style={styles.sectionTitle}>Enrollment Data</h2>
-          <div style={styles.grid}>
-            <div style={styles.field}>
-              <label style={styles.label}>Course</label>
-              <input
-                type="text"
-                value={formData.course}
-                onChange={(e) => handleChange("course", e.target.value)}
-                style={styles.input}
-              />
+      <div style={styles.content} className="profile-container">
+        {/* Changes Indicator */}
+        {hasChanges && (
+          <div style={styles.changesAlert} className="profile-card">
+            <AlertIcon />
+            <span>You have unsaved changes</span>
+          </div>
+        )}
+
+        {/* Main Section - Enrollment Data */}
+        <div style={styles.section} className="profile-card">
+          <div style={styles.sectionHeader}>
+            <h2 style={styles.sectionTitle}>Enrollment Information</h2>
+            <p style={styles.sectionDesc}>Edit your academic and enrollment details</p>
+          </div>
+
+          <div style={styles.fieldsContainer}>
+            {/* Row 1 */}
+            <div style={styles.fieldsRow}>
+              <div style={styles.fieldBlock}>
+                <label style={styles.label}>Course</label>
+                <input
+                  type="text"
+                  value={formData.course}
+                  onChange={(e) => handleChange("course", e.target.value)}
+                  style={styles.input}
+                />
+              </div>
+              <div style={styles.fieldBlock}>
+                <label style={styles.label}>Level</label>
+                <input
+                  type="text"
+                  value={formData.level}
+                  onChange={(e) => handleChange("level", e.target.value)}
+                  style={styles.input}
+                />
+              </div>
+              <div style={styles.fieldBlock}>
+                <label style={styles.label}>Department</label>
+                <input
+                  type="text"
+                  value={formData.dept}
+                  onChange={(e) => handleChange("dept", e.target.value)}
+                  style={styles.input}
+                />
+              </div>
             </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Level</label>
-              <input
-                type="text"
-                value={formData.level}
-                onChange={(e) => handleChange("level", e.target.value)}
-                style={styles.input}
-              />
+
+            {/* Row 2 */}
+            <div style={styles.fieldsRow}>
+              <div style={styles.fieldBlock}>
+                <label style={styles.label}>Curriculum</label>
+                <input
+                  type="text"
+                  value={formData.curriculum}
+                  onChange={(e) => handleChange("curriculum", e.target.value)}
+                  style={styles.input}
+                />
+              </div>
+              <div style={styles.fieldBlock}>
+                <label style={styles.label}>Year Level</label>
+                <input
+                  type="text"
+                  value={formData.yearLevel}
+                  onChange={(e) => handleChange("yearLevel", e.target.value)}
+                  style={styles.input}
+                />
+              </div>
+              <div style={styles.fieldBlock}>
+                <label style={styles.label}>Learner Ref. No</label>
+                <input
+                  type="text"
+                  value={formData.learnerRef}
+                  onChange={(e) => handleChange("learnerRef", e.target.value)}
+                  style={styles.input}
+                />
+              </div>
             </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Dept</label>
-              <input
-                type="text"
-                value={formData.dept}
-                onChange={(e) => handleChange("dept", e.target.value)}
-                style={styles.input}
-              />
+
+            {/* Row 3 */}
+            <div style={styles.fieldsRow}>
+              <div style={styles.fieldBlock}>
+                <label style={styles.label}>Entry Period</label>
+                <input
+                  type="text"
+                  value={formData.entryPeriod}
+                  onChange={(e) => handleChange("entryPeriod", e.target.value)}
+                  style={styles.input}
+                />
+              </div>
+              <div style={styles.fieldBlock}>
+                <label style={styles.label}>Entry Date</label>
+                <input
+                  type="text"
+                  value={formData.entryDate}
+                  onChange={(e) => handleChange("entryDate", e.target.value)}
+                  style={styles.input}
+                />
+              </div>
+              <div style={styles.fieldBlock}>
+                <label style={styles.label}>Exam Score</label>
+                <input
+                  type="text"
+                  value={formData.examScore}
+                  onChange={(e) => handleChange("examScore", e.target.value)}
+                  style={styles.input}
+                />
+              </div>
             </div>
           </div>
 
-          <div style={styles.grid}>
-            <div style={styles.field}>
-              <label style={styles.label}>Curriculum</label>
-              <input
-                type="text"
-                value={formData.curriculum}
-                onChange={(e) => handleChange("curriculum", e.target.value)}
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Year Level</label>
-              <input
-                type="text"
-                value={formData.yearLevel}
-                onChange={(e) => handleChange("yearLevel", e.target.value)}
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Learner Ref. No</label>
-              <input
-                type="text"
-                value={formData.learnerRef}
-                onChange={(e) => handleChange("learnerRef", e.target.value)}
-                style={styles.input}
-              />
-            </div>
-          </div>
+          {/* Entry Data Subsection */}
+          <div style={styles.subsection}>
+            <h3 style={styles.subTitle}>Entry Details</h3>
+            <div style={styles.fieldsContainer}>
+              <div style={styles.fieldsRow}>
+                <div style={styles.fieldBlock}>
+                  <label style={styles.label}>NSTP No</label>
+                  <input
+                    type="text"
+                    value={formData.nstpNo}
+                    onChange={(e) => handleChange("nstpNo", e.target.value)}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.fieldBlock}>
+                  <label style={styles.label}>Preferred Modality</label>
+                  <input
+                    type="text"
+                    value={formData.prefModality}
+                    onChange={(e) => handleChange("prefModality", e.target.value)}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.fieldBlock}>
+                  <label style={styles.label}>Campus</label>
+                  <input
+                    type="text"
+                    value={formData.campus}
+                    onChange={(e) => handleChange("campus", e.target.value)}
+                    style={styles.input}
+                  />
+                </div>
+              </div>
 
-          <div style={styles.grid}>
-            <div style={styles.field}>
-              <label style={styles.label}>Entry Period</label>
-              <input
-                type="text"
-                value={formData.entryPeriod}
-                onChange={(e) => handleChange("entryPeriod", e.target.value)}
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Entry Date</label>
-              <input
-                type="text"
-                value={formData.entryDate}
-                onChange={(e) => handleChange("entryDate", e.target.value)}
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Exam Score</label>
-              <input
-                type="text"
-                value={formData.examScore}
-                onChange={(e) => handleChange("examScore", e.target.value)}
-                style={styles.input}
-              />
-            </div>
-          </div>
-
-          <div style={styles.divider} />
-
-          <h3 style={styles.subTitle}>Entry Data</h3>
-          <div style={styles.grid}>
-            <div style={styles.field}>
-              <label style={styles.label}>NSTP No</label>
-              <input
-                type="text"
-                value={formData.nstpNo}
-                onChange={(e) => handleChange("nstpNo", e.target.value)}
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Pref. Modality</label>
-              <input
-                type="text"
-                value={formData.prefModality}
-                onChange={(e) => handleChange("prefModality", e.target.value)}
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Campus</label>
-              <input
-                type="text"
-                value={formData.campus}
-                onChange={(e) => handleChange("campus", e.target.value)}
-                style={styles.input}
-                placeholder="Leave empty if not applicable"
-              />
-            </div>
-          </div>
-
-          <div style={styles.grid}>
-            <div style={styles.field}>
-              <label style={styles.label}>Type</label>
-              <input
-                type="text"
-                value={formData.type}
-                onChange={(e) => handleChange("type", e.target.value)}
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.field}>
-              <label style={styles.label}>Section No</label>
-              <input
-                type="text"
-                value={formData.sectionNo}
-                onChange={(e) => handleChange("sectionNo", e.target.value)}
-                style={styles.input}
-              />
+              <div style={styles.fieldsRow}>
+                <div style={styles.fieldBlock}>
+                  <label style={styles.label}>Student Type</label>
+                  <input
+                    type="text"
+                    value={formData.type}
+                    onChange={(e) => handleChange("type", e.target.value)}
+                    style={styles.input}
+                  />
+                </div>
+                <div style={styles.fieldBlock}>
+                  <label style={styles.label}>Section Number</label>
+                  <input
+                    type="text"
+                    value={formData.sectionNo}
+                    onChange={(e) => handleChange("sectionNo", e.target.value)}
+                    style={styles.input}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Save Button */}
+        {/* Save Button Section */}
         <div style={styles.actionBar}>
           <button
             onClick={handleSave}
@@ -254,13 +290,11 @@ export default function EditStudentProfile({ user, onBack }) {
               ...(hasChanges ? {} : styles.saveBtnDisabled),
             }}
             disabled={!hasChanges}
+            title={hasChanges ? "Save your changes" : "No changes to save"}
           >
             <CheckIcon />
             <span>Save Changes</span>
           </button>
-          {hasChanges && (
-            <p style={styles.changesIndicator}>You have unsaved changes</p>
-          )}
         </div>
       </div>
     </div>
@@ -270,87 +304,118 @@ export default function EditStudentProfile({ user, onBack }) {
 const styles = {
   container: {
     width: "100%",
-    maxWidth: "1000px",
+    maxWidth: "1100px",
     margin: "0 auto",
     animation: "fadeIn 0.3s ease",
   },
   header: {
     display: "flex",
-    alignItems: "center",
+    alignItems: "flex-start",
     gap: "16px",
     marginBottom: "32px",
-    paddingBottom: "16px",
-    borderBottom: "1.5px solid var(--border-light)",
+    paddingBottom: "24px",
+    borderBottom: "2px solid var(--border-light)",
   },
   backBtn: {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    background: "transparent",
+    background: "var(--bg-input)",
     border: "1.5px solid var(--border-light)",
     borderRadius: "8px",
-    padding: "8px 12px",
+    padding: "10px 14px",
     color: "var(--text-secondary)",
     cursor: "pointer",
     fontSize: "13px",
     fontWeight: 600,
     transition: "all 0.2s",
     fontFamily: "'Source Sans 3', sans-serif",
+    minWidth: "fit-content",
+  },
+  headerContent: {
+    flex: 1,
   },
   title: {
-    fontSize: "24px",
+    fontSize: "28px",
     fontFamily: "'DM Serif Display', serif",
     color: "var(--text-primary)",
+    margin: "0 0 4px 0",
+    transition: "color 0.25s",
+    fontWeight: 700,
+  },
+  subtitle: {
+    fontSize: "13px",
+    color: "var(--text-secondary)",
     margin: 0,
     transition: "color 0.25s",
+    fontFamily: "'Source Sans 3', sans-serif",
   },
   content: {
     display: "flex",
     flexDirection: "column",
     gap: "24px",
   },
+  changesAlert: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    padding: "14px 16px",
+    background: "rgba(59, 130, 246, 0.05)",
+    border: "1.5px solid rgba(59, 130, 246, 0.2)",
+    borderRadius: "10px",
+    color: "var(--primary)",
+    fontSize: "13px",
+    fontWeight: 600,
+    fontFamily: "'Source Sans 3', sans-serif",
+  },
   section: {
     background: "var(--bg-surface)",
     border: "1.5px solid var(--border-light)",
     borderRadius: "12px",
-    padding: "20px",
+    padding: "28px",
     transition: "all 0.25s",
   },
+  sectionHeader: {
+    marginBottom: "24px",
+    paddingBottom: "16px",
+    borderBottom: "1.5px solid var(--border-light)",
+  },
   sectionTitle: {
-    fontSize: "16px",
+    fontSize: "18px",
     fontWeight: 700,
     color: "var(--text-primary)",
-    margin: "0 0 16px 0",
+    margin: "0 0 6px 0",
     fontFamily: "'Source Sans 3', sans-serif",
     transition: "color 0.25s",
   },
-  subTitle: {
-    fontSize: "14px",
-    fontWeight: 700,
+  sectionDesc: {
+    fontSize: "12px",
     color: "var(--text-secondary)",
-    margin: "16px 0 12px 0",
-    textTransform: "uppercase",
-    letterSpacing: "0.05em",
+    margin: 0,
     fontFamily: "'Source Sans 3', sans-serif",
     transition: "color 0.25s",
   },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-    gap: "16px",
-    marginBottom: "12px",
+  fieldsContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "20px",
   },
-  field: {
+  fieldsRow: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+    gap: "16px",
+  },
+  fieldBlock: {
     display: "flex",
     flexDirection: "column",
     gap: "6px",
   },
   label: {
-    fontSize: "12px",
-    fontWeight: 600,
+    fontSize: "11px",
+    fontWeight: 700,
     color: "var(--text-secondary)",
     textTransform: "uppercase",
-    letterSpacing: "0.03em",
+    letterSpacing: "0.05em",
     fontFamily: "'Source Sans 3', sans-serif",
     transition: "color 0.25s",
   },
@@ -363,13 +428,21 @@ const styles = {
     background: "var(--bg-input)",
     color: "var(--text-primary)",
     transition: "all 0.2s",
-    outline: "none",
   },
-  divider: {
-    height: "1px",
-    background: "var(--border-light)",
-    margin: "16px 0",
-    transition: "background 0.25s",
+  subsection: {
+    marginTop: "20px",
+    paddingTop: "20px",
+    borderTop: "1.5px solid var(--border-light)",
+  },
+  subTitle: {
+    fontSize: "13px",
+    fontWeight: 700,
+    color: "var(--text-secondary)",
+    margin: "0 0 16px 0",
+    textTransform: "uppercase",
+    letterSpacing: "0.05em",
+    fontFamily: "'Source Sans 3', sans-serif",
+    transition: "color 0.25s",
   },
   actionBar: {
     display: "flex",
@@ -386,7 +459,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    padding: "10px 24px",
+    padding: "11px 24px",
     fontSize: "13px",
     fontWeight: 700,
     fontFamily: "'Source Sans 3', sans-serif",
@@ -400,13 +473,6 @@ const styles = {
   saveBtnDisabled: {
     opacity: 0.5,
     cursor: "not-allowed",
-  },
-  changesIndicator: {
-    fontSize: "12px",
-    color: "var(--text-secondary)",
-    margin: 0,
-    fontFamily: "'Source Sans 3', sans-serif",
-    transition: "color 0.25s",
   },
   successMessage: {
     position: "fixed",
