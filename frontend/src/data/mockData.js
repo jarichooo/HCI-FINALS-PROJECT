@@ -1,21 +1,38 @@
+// ─── Student credentials ──────────────────────────────────────────────────────
+
 export const mockStudents = [
   {
     studentId: "2021-00123",
     password: "student123",
     name: "Juan Dela Cruz",
+    email: "jdelacruz@educore.edu.ph",
   },
   {
     studentId: "2022-00456",
     password: "pass456",
     name: "Maria Santos",
+    email: "msantos@educore.edu.ph",
   },
 ];
 
 export function validateStudent(studentId, password) {
-  return mockStudents.find(
-    (s) => s.studentId === studentId && s.password === password
-  ) || null;
+  return (
+    mockStudents.find(
+      (s) => s.studentId === studentId && s.password === password
+    ) || null
+  );
 }
+
+// ─── Assessment periods ───────────────────────────────────────────────────────
+
+export const mockAssessmentPeriods = [
+  "1st Semester 2024-2025",
+  "2nd Semester 2024-2025",
+  "1st Semester 2023-2024",
+  "2nd Semester 2023-2024",
+];
+
+// ─── Enrolled subjects ────────────────────────────────────────────────────────
 
 export const mockEnrolledSubjects = [
   {
@@ -24,8 +41,8 @@ export const mockEnrolledSubjects = [
     description: "Fundamentals of programming and algorithms",
     units: 3,
     tf: "M/W",
-    lec: "10:00-11:30",
-    lab: "1:00-2:30",
+    lec: "10:00–11:30",
+    lab: "1:00–2:30",
     schedule: "M10:00, W10:00",
   },
   {
@@ -34,8 +51,8 @@ export const mockEnrolledSubjects = [
     description: "Advanced calculus and integration techniques",
     units: 4,
     tf: "T/Th",
-    lec: "9:00-10:30",
-    lab: "2:00-3:30",
+    lec: "9:00–10:30",
+    lab: "2:00–3:30",
     schedule: "T9:00, Th9:00",
   },
   {
@@ -44,7 +61,7 @@ export const mockEnrolledSubjects = [
     description: "Advanced writing and communication skills",
     units: 3,
     tf: "M/W/F",
-    lec: "11:00-12:00",
+    lec: "11:00–12:00",
     lab: "N/A",
     schedule: "MWF11:00",
   },
@@ -54,8 +71,8 @@ export const mockEnrolledSubjects = [
     description: "Classical mechanics and motion",
     units: 4,
     tf: "T/Th",
-    lec: "1:00-2:30",
-    lab: "3:00-5:00",
+    lec: "1:00–2:30",
+    lab: "3:00–5:00",
     schedule: "T1:00, Th1:00",
   },
   {
@@ -64,8 +81,8 @@ export const mockEnrolledSubjects = [
     description: "Basic principles of chemistry",
     units: 3,
     tf: "M/W",
-    lec: "2:00-3:30",
-    lab: "4:00-6:00",
+    lec: "2:00–3:30",
+    lab: "4:00–6:00",
     schedule: "M2:00, W2:00",
   },
   {
@@ -74,14 +91,8 @@ export const mockEnrolledSubjects = [
     description: "Survey of major historical events",
     units: 3,
     tf: "F",
-    lec: "10:00-12:00",
+    lec: "10:00–12:00",
     lab: "N/A",
     schedule: "F10:00",
   },
-];
-
-export const mockAssessmentPeriods = [
-  "First Semester 2024-2025",
-  "Second Semester 2024-2025",
-  "Summer 2025",
 ];
