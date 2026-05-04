@@ -1,6 +1,8 @@
 import { useState } from "react";
 import DashboardLayout from "../components/DashboardLayout";
 import Assessment from "./Assessment";
+import ViewStudentProfile from "./ViewStudentProfile";
+import EditStudentProfile from "./EditStudentProfile";
 
 const WavingHandIcon = () => (
   <svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -59,6 +61,10 @@ export default function StudentDashboard({ user, onLogout }) {
       `}</style>
       {activePage === "Assessment" ? (
         <Assessment onBack={handleBack} />
+      ) : activePage === "View Student Profile" ? (
+        <ViewStudentProfile user={user} onBack={handleBack} />
+      ) : activePage === "Edit Student Profile" ? (
+        <EditStudentProfile user={user} onBack={handleBack} />
       ) : (
         <div style={styles.wrapper} className="welcome-content">
           <WavingHandIcon />

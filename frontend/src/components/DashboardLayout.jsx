@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTheme } from "../context/ThemeContext";
+import { useEffect, useRef } from "react";
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -93,7 +94,23 @@ export default function DashboardLayout({ user, onLogout, children, activePage, 
   const { isDark, toggleTheme } = useTheme();
   const [activeTab, setActiveTab]       = useState("transactions");
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [activeNav, setActiveNav]       = useState(activePage || null);
+  const profileDropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(e.target)) {
+        setShowProfileDropdown(false);
+      }
+    };
+
+    if (showProfileDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [showProfileDropdown]);
 
   const navGroups = activeTab === "transactions" ? TRANSACTIONS : REPORTS;
 
@@ -141,6 +158,7 @@ export default function DashboardLayout({ user, onLogout, children, activePage, 
         .db-logout-cancel:hover { background: var(--bg-input) !important; }
         .db-logout-confirm:hover { background: #b91c1c !important; }
         .db-user-btn:hover  { background: var(--bg-input) !important; }
+        .db-dropdown-item:hover { background: var(--bg-input) !important; }
 
         /* Scrollbar styling for sidebar */
         .db-sidebar-scroll::-webkit-scrollbar { width: 4px; }
@@ -156,14 +174,47 @@ export default function DashboardLayout({ user, onLogout, children, activePage, 
       <header style={styles.header} className="db-root">
 
         {/* Left: user info */}
-        <button className="db-user-btn" style={styles.userBtn}>
-          <div style={styles.avatar}>{initials}</div>
-          <div style={styles.userInfo}>
-            <span style={styles.userName}>{user?.name || "Student"}</span>
-            <span style={styles.userEmail}>{user?.email || "student@educore.edu.ph"}</span>
-          </div>
-          <ChevronDown />
-        </button>
+        <div style={styles.userBtnWrapper} ref={profileDropdownRef}>
+          <button 
+            className="db-user-btn" 
+            style={styles.userBtn}
+            onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+          >
+            <div style={styles.avatar}>{initials}</div>
+            <div style={styles.userInfo}>
+              <span style={styles.userName}>{user?.name || "Student"}</span>
+              <span style={styles.userEmail}>{user?.email || "student@educore.edu.ph"}</span>
+            </div>
+            <ChevronDown />
+          </button>
+
+          {/* Profile Dropdown */}
+          {showProfileDropdown && (
+            <div 
+              style={styles.profileDropdown}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button 
+                style={styles.dropdownItem}
+                onClick={() => {
+                  setShowProfileDropdown(false);
+                  if (onNavigate) onNavigate("View Student Profile");
+                }}
+              >
+                View Student Profile
+              </button>
+              <button 
+                style={styles.dropdownItem}
+                onClick={() => {
+                  setShowProfileDropdown(false);
+                  if (onNavigate) onNavigate("Edit Student Profile");
+                }}
+              >
+                Edit Student Profile
+              </button>
+            </div>
+          )}
+        </div>
 
         {/* Center: brand */}
         <div style={styles.brand}>
@@ -338,6 +389,11 @@ const styles = {
     minWidth: 0,
     flex: "0 0 auto",
   },
+  userBtnWrapper: {
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+  },
   avatar: {
     width: "34px",
     height: "34px",
@@ -371,6 +427,33 @@ const styles = {
     color: "var(--text-secondary)",
     transition: "color 0.25s",
     whiteSpace: "nowrap",
+  },
+  profileDropdown: {
+    position: "absolute",
+    top: "100%",
+    left: "0",
+    marginTop: "8px",
+    background: "var(--bg-surface)",
+    border: "1.5px solid var(--border-light)",
+    borderRadius: "10px",
+    minWidth: "200px",
+    boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
+    zIndex: 150,
+    overflow: "hidden",
+    animation: "slideUp 0.2s ease",
+  },
+  dropdownItem: {
+    width: "100%",
+    padding: "12px 16px",
+    border: "none",
+    background: "transparent",
+    color: "var(--text-primary)",
+    fontSize: "13px",
+    fontWeight: 600,
+    textAlign: "left",
+    cursor: "pointer",
+    transition: "background 0.15s, color 0.15s",
+    fontFamily: "'Source Sans 3', sans-serif",
   },
   brand: {
     position: "absolute",
