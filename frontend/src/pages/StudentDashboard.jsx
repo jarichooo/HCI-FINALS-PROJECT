@@ -1,4 +1,6 @@
+import { useState } from "react";
 import DashboardLayout from "../components/DashboardLayout";
+import Assessment from "./Assessment";
 
 const WavingHandIcon = () => (
   <svg width="90" height="90" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -36,9 +38,18 @@ const WavingHandIcon = () => (
 
 export default function StudentDashboard({ user, onLogout }) {
   const firstName = user?.name?.split(" ")[0] || "Student";
+  const [activePage, setActivePage] = useState(null);
+
+  const handleNavigate = (page) => {
+    setActivePage(page);
+  };
+
+  const handleBack = () => {
+    setActivePage(null);
+  };
 
   return (
-    <DashboardLayout user={user} onLogout={onLogout}>
+    <DashboardLayout user={user} onLogout={onLogout} activePage={activePage} onNavigate={handleNavigate}>
       <style>{`
         @keyframes welcomeIn {
           from { opacity: 0; transform: translateY(20px); }
@@ -46,16 +57,19 @@ export default function StudentDashboard({ user, onLogout }) {
         }
         .welcome-content { animation: welcomeIn 0.5s ease both 0.2s; opacity: 0; animation-fill-mode: forwards; }
       `}</style>
-
-      <div style={styles.wrapper} className="welcome-content">
-        <WavingHandIcon />
-        <div style={styles.textBlock}>
-          <h2 style={styles.greeting}>Welcome back, {firstName}!</h2>
-          <p style={styles.sub}>
-            Select a transaction or report from the sidebar to get started.
-          </p>
+      {activePage === "Assessment" ? (
+        <Assessment onBack={handleBack} />
+      ) : (
+        <div style={styles.wrapper} className="welcome-content">
+          <WavingHandIcon />
+          <div style={styles.textBlock}>
+            <h2 style={styles.greeting}>Welcome back, {firstName}!</h2>
+            <p style={styles.sub}>
+              Select a transaction or report from the sidebar to get started.
+            </p>
+          </div>
         </div>
-      </div>
+      )}
     </DashboardLayout>
   );
 }
