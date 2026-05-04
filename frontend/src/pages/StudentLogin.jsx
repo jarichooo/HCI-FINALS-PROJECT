@@ -1,6 +1,9 @@
 import { useState } from "react";
 import Layout from "../components/Layout";
 import FormCard from "../components/FormCard";
+import { validateStudent } from "../data/mockData";
+
+// ─── Icons ───────────────────────────────────────────────────────────────────
 
 const EyeIcon = ({ open }) =>
   open ? (
@@ -44,26 +47,97 @@ const BackIcon = () => (
   </svg>
 );
 
+const CheckIcon = () => (
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
+    stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="9 12 11 14 15 10" />
+  </svg>
+);
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
 export default function StudentLogin({ onBack }) {
-  const [studentId, setStudentId] = useState("");
-  const [password, setPassword] = useState("");
+  const [studentId, setStudentId]       = useState("");
+  const [password, setPassword]         = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [idFocused, setIdFocused] = useState(false);
-  const [passFocused, setPassFocused] = useState(false);
-  const [shake, setShake] = useState(false);
+  const [isLoading, setIsLoading]       = useState(false);
+  const [idFocused, setIdFocused]       = useState(false);
+  const [passFocused, setPassFocused]   = useState(false);
+  const [shake, setShake]               = useState(false);
+  const [error, setError]               = useState("");
+  const [loggedInUser, setLoggedInUser] = useState(null); // holds user object on success
+
+  const triggerShake = () => {
+    setShake(true);
+    setTimeout(() => setShake(false), 500);
+  };
 
   const handleLogin = (e) => {
     e.preventDefault();
+    setError("");
+
+    // Empty field validation
     if (!studentId || !password) {
-      setShake(true);
-      setTimeout(() => setShake(false), 500);
+      setError("Please fill in all fields.");
+      triggerShake();
       return;
     }
+
+    // Simulate network delay, then validate against mockData
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 2000);
+    setTimeout(() => {
+      const user = validateStudent(studentId, password);
+      if (user) {
+        setLoggedInUser(user); // ✅ success
+      } else {
+        setError("Invalid Student ID or password."); // ❌ fail
+        triggerShake();
+      }
+      setIsLoading(false);
+    }, 1200);
   };
 
+  // ── Success screen ──────────────────────────────────────────────────────────
+  if (loggedInUser) {
+    return (
+      <Layout>
+        <div style={styles.card} className="sl-card">
+          <style>{`
+            @keyframes fadeSlideUp {
+              from { opacity: 0; transform: translateY(24px); }
+              to   { opacity: 1; transform: translateY(0); }
+            }
+            @keyframes popIn {
+              0%   { transform: scale(0.6); opacity: 0; }
+              70%  { transform: scale(1.1); }
+              100% { transform: scale(1);   opacity: 1; }
+            }
+            .sl-card       { animation: fadeSlideUp 0.5s ease both; }
+            .sl-check-icon { animation: popIn 0.5s ease both 0.2s; opacity: 0; }
+          `}</style>
+
+          <EduCoreLogo size={68} />
+
+          <div style={styles.successBox}>
+            <div className="sl-check-icon">
+              <CheckIcon />
+            </div>
+            <h2 style={styles.successTitle}>Login Successful!</h2>
+            <p style={styles.successName}>Welcome back, <strong>{loggedInUser.name}</strong>!</p>
+            <p style={styles.successSub}>Student dashboard coming soon.</p>
+          </div>
+
+          <button className="sl-back" style={styles.backBtn} onClick={onBack}>
+            <BackIcon />
+            <span style={styles.backLabel}>Back to role selection</span>
+          </button>
+        </div>
+      </Layout>
+    );
+  }
+
+  // ── Login form ──────────────────────────────────────────────────────────────
   return (
     <Layout>
       <div style={styles.card} className="sl-card">
@@ -74,41 +148,45 @@ export default function StudentLogin({ onBack }) {
           }
           @keyframes shake {
             0%,100% { transform: translateX(0); }
-            20%      { transform: translateX(-8px); }
-            40%      { transform: translateX(8px); }
-            60%      { transform: translateX(-5px); }
-            80%      { transform: translateX(5px); }
+            20%     { transform: translateX(-8px); }
+            40%     { transform: translateX(8px); }
+            60%     { transform: translateX(-5px); }
+            80%     { transform: translateX(5px); }
           }
           @keyframes spin {
             to { transform: rotate(360deg); }
           }
+          @keyframes errorIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+          }
           .sl-card { animation: fadeSlideUp 0.5s ease both; }
           input::placeholder { color: var(--text-placeholder); }
-          input:focus { outline: none; }
+          input:focus  { outline: none; }
           button:focus { outline: none; }
           .sl-login-btn:hover:not(:disabled) {
             background: var(--primary-hover) !important;
             transform: translateY(-1px);
             box-shadow: 0 6px 20px var(--shadow-btn) !important;
           }
-          .sl-back:hover { opacity: 0.65; }
+          .sl-back:hover   { opacity: 0.65; }
           .sl-forgot:hover { text-decoration: underline; }
-          .sl-eye:hover { color: var(--text-primary); }
+          .sl-eye:hover    { color: var(--text-primary); }
+          .sl-error        { animation: errorIn 0.25s ease both; }
 
-          /* Responsive */
           @media (max-width: 500px) {
             .sl-form-card-inner { padding: 28px 20px 24px !important; }
             .sl-card { width: 100% !important; }
           }
         `}</style>
 
-        {/* EduCore brand mark */}
+        {/* Brand mark */}
         <div style={styles.header}>
           <EduCoreLogo size={68} />
           <p style={styles.brandName}>EduCore</p>
         </div>
 
-        {/* Login form card */}
+        {/* Form card */}
         <FormCard shake={shake} innerClassName="sl-form-card-inner">
           <div style={styles.formHeader}>
             <StudentIcon />
@@ -116,30 +194,37 @@ export default function StudentLogin({ onBack }) {
           </div>
 
           <form onSubmit={handleLogin} style={styles.form}>
+
+            {/* Student ID */}
             <input
               type="text"
               placeholder="Student ID"
               value={studentId}
-              onChange={(e) => setStudentId(e.target.value)}
+              onChange={(e) => { setStudentId(e.target.value); setError(""); }}
               onFocus={() => setIdFocused(true)}
               onBlur={() => setIdFocused(false)}
               style={{
                 ...styles.input,
-                borderColor: idFocused ? "var(--border-focus)" : "var(--border-input)",
+                borderColor: error
+                  ? "rgba(220,38,38,0.5)"
+                  : idFocused ? "var(--border-focus)" : "var(--border-input)",
                 boxShadow: idFocused ? "0 0 0 3px var(--shadow-focus)" : "none",
               }}
             />
 
+            {/* Password */}
             <div style={{
               ...styles.passwordWrapper,
-              borderColor: passFocused ? "var(--border-focus)" : "var(--border-input)",
+              borderColor: error
+                ? "rgba(220,38,38,0.5)"
+                : passFocused ? "var(--border-focus)" : "var(--border-input)",
               boxShadow: passFocused ? "0 0 0 3px var(--shadow-focus)" : "none",
             }}>
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => { setPassword(e.target.value); setError(""); }}
                 onFocus={() => setPassFocused(true)}
                 onBlur={() => setPassFocused(false)}
                 style={styles.passwordInput}
@@ -155,6 +240,14 @@ export default function StudentLogin({ onBack }) {
               </button>
             </div>
 
+            {/* Error message */}
+            {error && (
+              <div className="sl-error" style={styles.errorMsg}>
+                ⚠ {error}
+              </div>
+            )}
+
+            {/* Login button */}
             <button
               type="submit"
               className="sl-login-btn"
@@ -170,7 +263,7 @@ export default function StudentLogin({ onBack }) {
           </form>
         </FormCard>
 
-        {/* Back button — below card */}
+        {/* Back button */}
         <button className="sl-back" style={styles.backBtn} onClick={onBack}>
           <BackIcon />
           <span style={styles.backLabel}>Back to role selection</span>
@@ -179,6 +272,8 @@ export default function StudentLogin({ onBack }) {
     </Layout>
   );
 }
+
+// ─── Styles ───────────────────────────────────────────────────────────────────
 
 const styles = {
   card: {
@@ -266,6 +361,16 @@ const styles = {
     flexShrink: 0,
     transition: "color 0.15s",
   },
+  errorMsg: {
+    background: "rgba(220,38,38,0.08)",
+    border: "1.5px solid rgba(220,38,38,0.25)",
+    borderRadius: "8px",
+    padding: "10px 14px",
+    fontSize: "13px",
+    color: "#dc2626",
+    textAlign: "center",
+    fontWeight: 600,
+  },
   loginBtn: {
     width: "100%",
     height: "46px",
@@ -315,6 +420,41 @@ const styles = {
     fontSize: "13px",
     color: "var(--text-secondary)",
     fontFamily: "'Source Sans 3', sans-serif",
+    transition: "color 0.25s",
+  },
+
+  // Success screen
+  successBox: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "12px",
+    padding: "36px 40px",
+    background: "var(--bg-surface)",
+    borderRadius: "16px",
+    border: "1.5px solid var(--border-light)",
+    boxShadow: "0 4px 32px var(--shadow-card)",
+    textAlign: "center",
+    maxWidth: "400px",
+    width: "100%",
+  },
+  successTitle: {
+    fontSize: "22px",
+    fontFamily: "'DM Serif Display', serif",
+    color: "var(--text-primary)",
+    margin: 0,
+    transition: "color 0.25s",
+  },
+  successName: {
+    fontSize: "15px",
+    color: "var(--text-secondary)",
+    margin: 0,
+    transition: "color 0.25s",
+  },
+  successSub: {
+    fontSize: "13px",
+    color: "var(--text-placeholder)",
+    margin: 0,
     transition: "color 0.25s",
   },
 };
