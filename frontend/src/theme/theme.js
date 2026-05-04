@@ -2,7 +2,9 @@ export const lightTheme = {
   // Backgrounds
   bgPage:        "#eef2fb",
   bgSurface:     "#ffffff",
+  bgSecondary:   "#f9faff",
   bgInput:       "#f7f9ff",
+  bgHover:       "#f3f5fa",
   bgGrid:        "rgba(13,47,110,0.04)",
 
   // Borders
@@ -14,6 +16,8 @@ export const lightTheme = {
   // Brand / Primary
   primary:       "#0d2f6e",
   primaryHover:  "#1a3d8f",
+  primaryDark:   "#0a2456",
+  primaryAlpha:  "rgba(13,47,110,0.12)",
   primaryText:   "#ffffff",
 
   // Text
@@ -37,7 +41,9 @@ export const darkTheme = {
   // Backgrounds
   bgPage:        "#0d1b36",
   bgSurface:     "#162044",
+  bgSecondary:   "#1c2a52",
   bgInput:       "#1c2a52",
+  bgHover:       "#222e52",
   bgGrid:        "rgba(200,214,240,0.03)",
 
   // Borders
@@ -49,6 +55,8 @@ export const darkTheme = {
   // Brand / Primary
   primary:       "#4a72cc",
   primaryHover:  "#5a82dc",
+  primaryDark:   "#3a5fa8",
+  primaryAlpha:  "rgba(74,114,204,0.18)",
   primaryText:   "#ffffff",
 
   // Text
