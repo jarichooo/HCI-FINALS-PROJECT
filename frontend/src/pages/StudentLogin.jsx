@@ -47,17 +47,9 @@ const BackIcon = () => (
   </svg>
 );
 
-const CheckIcon = () => (
-  <svg width="48" height="48" viewBox="0 0 24 24" fill="none"
-    stroke="#16a34a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10" />
-    <polyline points="9 12 11 14 15 10" />
-  </svg>
-);
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function StudentLogin({ onBack }) {
+export default function StudentLogin({ onBack, onLoginSuccess }) {
   const [studentId, setStudentId]       = useState("");
   const [password, setPassword]         = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -66,7 +58,6 @@ export default function StudentLogin({ onBack }) {
   const [passFocused, setPassFocused]   = useState(false);
   const [shake, setShake]               = useState(false);
   const [error, setError]               = useState("");
-  const [loggedInUser, setLoggedInUser] = useState(null); // holds user object on success
 
   const triggerShake = () => {
     setShake(true);
@@ -89,7 +80,7 @@ export default function StudentLogin({ onBack }) {
     setTimeout(() => {
       const user = validateStudent(studentId, password);
       if (user) {
-        setLoggedInUser(user); // ✅ success
+        if (onLoginSuccess) onLoginSuccess(user); // ← passes user up to App
       } else {
         setError("Invalid Student ID or password."); // ❌ fail
         triggerShake();
@@ -97,45 +88,6 @@ export default function StudentLogin({ onBack }) {
       setIsLoading(false);
     }, 1200);
   };
-
-  // ── Success screen ──────────────────────────────────────────────────────────
-  if (loggedInUser) {
-    return (
-      <Layout>
-        <div style={styles.card} className="sl-card">
-          <style>{`
-            @keyframes fadeSlideUp {
-              from { opacity: 0; transform: translateY(24px); }
-              to   { opacity: 1; transform: translateY(0); }
-            }
-            @keyframes popIn {
-              0%   { transform: scale(0.6); opacity: 0; }
-              70%  { transform: scale(1.1); }
-              100% { transform: scale(1);   opacity: 1; }
-            }
-            .sl-card       { animation: fadeSlideUp 0.5s ease both; }
-            .sl-check-icon { animation: popIn 0.5s ease both 0.2s; opacity: 0; }
-          `}</style>
-
-          <EduCoreLogo size={68} />
-
-          <div style={styles.successBox}>
-            <div className="sl-check-icon">
-              <CheckIcon />
-            </div>
-            <h2 style={styles.successTitle}>Login Successful!</h2>
-            <p style={styles.successName}>Welcome back, <strong>{loggedInUser.name}</strong>!</p>
-            <p style={styles.successSub}>Student dashboard coming soon.</p>
-          </div>
-
-          <button className="sl-back" style={styles.backBtn} onClick={onBack}>
-            <BackIcon />
-            <span style={styles.backLabel}>Back to role selection</span>
-          </button>
-        </div>
-      </Layout>
-    );
-  }
 
   // ── Login form ──────────────────────────────────────────────────────────────
   return (
@@ -420,41 +372,6 @@ const styles = {
     fontSize: "13px",
     color: "var(--text-secondary)",
     fontFamily: "'Source Sans 3', sans-serif",
-    transition: "color 0.25s",
-  },
-
-  // Success screen
-  successBox: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "12px",
-    padding: "36px 40px",
-    background: "var(--bg-surface)",
-    borderRadius: "16px",
-    border: "1.5px solid var(--border-light)",
-    boxShadow: "0 4px 32px var(--shadow-card)",
-    textAlign: "center",
-    maxWidth: "400px",
-    width: "100%",
-  },
-  successTitle: {
-    fontSize: "22px",
-    fontFamily: "'DM Serif Display', serif",
-    color: "var(--text-primary)",
-    margin: 0,
-    transition: "color 0.25s",
-  },
-  successName: {
-    fontSize: "15px",
-    color: "var(--text-secondary)",
-    margin: 0,
-    transition: "color 0.25s",
-  },
-  successSub: {
-    fontSize: "13px",
-    color: "var(--text-placeholder)",
-    margin: 0,
     transition: "color 0.25s",
   },
 };
