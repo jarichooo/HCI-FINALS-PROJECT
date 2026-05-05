@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { mockEnrolledSubjects, mockAssessmentPeriods } from "../data/mockData";
+import { mockAssessmentPeriods, getEnrolledSubjectsForPeriod } from "../data/mockData";
 import PageHeader from "../components/PageHeader";
 import Button from "../components/Button";
 import Card from "../components/Card";
@@ -96,7 +96,9 @@ export default function Assessment({ onBack }) {
   const [selectedPeriod, setSelectedPeriod] = useState("");
   const [dropdownOpen, setDropdownOpen]     = useState(false);
 
-  const totalUnits = mockEnrolledSubjects.reduce((sum, s) => sum + s.units, 0);
+  // Get subjects for selected period, with random values for missing fields
+  const currentSubjects = selectedPeriod ? getEnrolledSubjectsForPeriod(selectedPeriod) : [];
+  const totalUnits = currentSubjects.reduce((sum, s) => sum + s.units, 0);
 
   return (
     <div style={styles.container}>
@@ -168,7 +170,7 @@ export default function Assessment({ onBack }) {
           <div style={styles.tableHeader}>
             <div>
               <h2 style={styles.sectionTitle}>Enrolled Subjects</h2>
-              <p style={styles.sectionSub}>{mockEnrolledSubjects.length} subjects · {totalUnits} total units</p>
+              <p style={styles.sectionSub}>{currentSubjects.length} subjects · {totalUnits} total units</p>
             </div>
           </div>
 
@@ -187,7 +189,7 @@ export default function Assessment({ onBack }) {
                 </tr>
               </thead>
               <tbody>
-                {mockEnrolledSubjects.map((subject, i) => (
+                {currentSubjects.map((subject, i) => (
                   <tr key={subject.code} className="as-row"
                     style={{ background: i % 2 === 0 ? "transparent" : "var(--bg-page)" }}>
                     <td style={{ ...styles.td, fontWeight: 700, color: "var(--primary)" }}>{subject.code}</td>
@@ -221,7 +223,7 @@ export default function Assessment({ onBack }) {
             variant="primary"
             size="md"
             className="as-pdf-btn"
-            onClick={() => generatePDF(selectedPeriod, mockEnrolledSubjects)}
+            onClick={() => generatePDF(selectedPeriod, currentSubjects)}
           >
             <DownloadIcon />
             Download PDF Copy
