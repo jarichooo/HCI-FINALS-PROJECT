@@ -10,44 +10,35 @@ function getBubblePosition(rect, position) {
       animation: "bubblePop 0.25s ease both",
       top: "50%",
       left: "50%",
-      transform: "translate(-50%, -50%)"
+      transform: "translate(-50%, -50%)",
     };
   }
 
   const GAP = 20;
   const BUBBLE_WIDTH = 300;
-  const BUBBLE_HEIGHT = 220; // Approximate height including arrow space
+  const BUBBLE_HEIGHT = 220;
   const ARROW_SIZE = 8;
-
-  // Get viewport dimensions
   const viewportWidth = window.innerWidth;
   const viewportHeight = window.innerHeight;
-
-  // Element center coordinates
   const elementCenterX = rect.left + rect.width / 2;
   const elementCenterY = rect.top + rect.height / 2;
 
   let bubbleTop, bubbleLeft, arrowStyle;
 
   switch (position) {
-    case "bottom-left":
-      // Position bubble below element, aligned to element's left edge
+    case "bottom-left": {
       bubbleTop = rect.bottom + GAP;
       bubbleLeft = Math.max(16, rect.left);
-
-      // If bubble would go off-screen to the right, adjust
       if (bubbleLeft + BUBBLE_WIDTH > viewportWidth - 16) {
         bubbleLeft = viewportWidth - BUBBLE_WIDTH - 16;
       }
-
-      // Constrain top to viewport
       if (bubbleTop + BUBBLE_HEIGHT > viewportHeight - 16) {
         bubbleTop = Math.max(16, viewportHeight - BUBBLE_HEIGHT - 16);
       }
-
-      // Calculate arrow position to point at element's center
-      const arrowLeftPos = Math.max(16, Math.min(elementCenterX - bubbleLeft, BUBBLE_WIDTH - 16));
-
+      const arrowLeftPos = Math.max(
+        16,
+        Math.min(elementCenterX - bubbleLeft, BUBBLE_WIDTH - 16)
+      );
       arrowStyle = {
         position: "absolute",
         top: `-${ARROW_SIZE * 2}px`,
@@ -59,20 +50,18 @@ function getBubblePosition(rect, position) {
         borderColor: `transparent transparent var(--bg-surface) transparent`,
       };
       break;
+    }
 
-    case "bottom-right":
-      // Position bubble below element, aligned to element's right edge
+    case "bottom-right": {
       bubbleTop = rect.bottom + GAP;
       bubbleLeft = Math.max(16, rect.right - BUBBLE_WIDTH);
-
-      // Constrain top to viewport
       if (bubbleTop + BUBBLE_HEIGHT > viewportHeight - 16) {
         bubbleTop = Math.max(16, viewportHeight - BUBBLE_HEIGHT - 16);
       }
-
-      // Calculate arrow position to point at element's center
-      const arrowRightPos = Math.max(16, Math.min(bubbleLeft + BUBBLE_WIDTH - elementCenterX, BUBBLE_WIDTH - 16));
-
+      const arrowRightPos = Math.max(
+        16,
+        Math.min(bubbleLeft + BUBBLE_WIDTH - elementCenterX, BUBBLE_WIDTH - 16)
+      );
       arrowStyle = {
         position: "absolute",
         top: `-${ARROW_SIZE * 2}px`,
@@ -84,16 +73,12 @@ function getBubblePosition(rect, position) {
         borderColor: `transparent transparent var(--bg-surface) transparent`,
       };
       break;
+    }
 
-    case "right":
-      // Position bubble to the right of element, vertically centered
+    case "right": {
       bubbleLeft = rect.right + GAP;
       bubbleTop = elementCenterY - BUBBLE_HEIGHT / 2;
-
-      // Constrain within viewport
       bubbleTop = Math.max(16, Math.min(bubbleTop, viewportHeight - BUBBLE_HEIGHT - 16));
-
-      // If bubble would go off-screen to the right, position to the left instead
       if (bubbleLeft + BUBBLE_WIDTH > viewportWidth - 16) {
         bubbleLeft = rect.left - BUBBLE_WIDTH - GAP;
         arrowStyle = {
@@ -121,16 +106,12 @@ function getBubblePosition(rect, position) {
         };
       }
       break;
+    }
 
-    case "left":
-      // Position bubble to the left of element, vertically centered
+    case "left": {
       bubbleLeft = rect.left - BUBBLE_WIDTH - GAP;
       bubbleTop = elementCenterY - BUBBLE_HEIGHT / 2;
-
-      // Constrain within viewport
       bubbleTop = Math.max(16, Math.min(bubbleTop, viewportHeight - BUBBLE_HEIGHT - 16));
-
-      // If bubble would go off-screen to the left, position to the right instead
       if (bubbleLeft < 16) {
         bubbleLeft = rect.right + GAP;
         arrowStyle = {
@@ -158,20 +139,17 @@ function getBubblePosition(rect, position) {
         };
       }
       break;
+    }
 
-    default:
-      // Default to bottom positioning
+    default: {
       bubbleTop = rect.bottom + GAP;
       bubbleLeft = Math.max(16, elementCenterX - BUBBLE_WIDTH / 2);
-
-      // Constrain within viewport
       if (bubbleLeft + BUBBLE_WIDTH > viewportWidth - 16) {
         bubbleLeft = viewportWidth - BUBBLE_WIDTH - 16;
       }
       if (bubbleTop + BUBBLE_HEIGHT > viewportHeight - 16) {
         bubbleTop = Math.max(16, viewportHeight - BUBBLE_HEIGHT - 16);
       }
-
       arrowStyle = {
         position: "absolute",
         top: `-${ARROW_SIZE * 2}px`,
@@ -182,6 +160,7 @@ function getBubblePosition(rect, position) {
         borderWidth: `0 ${ARROW_SIZE}px ${ARROW_SIZE}px ${ARROW_SIZE}px`,
         borderColor: `transparent transparent var(--bg-surface) transparent`,
       };
+    }
   }
 
   return {
@@ -198,7 +177,6 @@ export default function GuideTour({ onFinish }) {
   const [step, setStep] = useState(0);
   const [visible, setVisible] = useState(false);
 
-  // Small delay so layout paints before we show the tour
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 400);
     return () => clearTimeout(t);
@@ -208,52 +186,43 @@ export default function GuideTour({ onFinish }) {
   const isLast = step === guideSteps.length - 1;
 
   const handleNext = () => {
-    if (isLast) {
-      handleFinish();
-    } else {
-      setStep((s) => s + 1);
-    }
+    if (isLast) handleFinish();
+    else setStep((s) => s + 1);
   };
 
   const handleFinish = () => {
     setVisible(false);
-    // Immediately call onFinish to remove the component
     onFinish();
   };
 
   if (!visible || !current) return null;
 
-  // Get the anchor element's bounding rect for positioning
   const anchor = document.querySelector(`[data-guide="${current.id}"]`);
   const rect = anchor ? anchor.getBoundingClientRect() : null;
-
   const bubblePosition = getBubblePosition(rect, current.position);
 
-  // Calculate highlight box with padding
   const HIGHLIGHT_PADDING = 12;
-  const highlightRect = rect ? {
-    top: rect.top - HIGHLIGHT_PADDING,
-    left: rect.left - HIGHLIGHT_PADDING,
-    width: rect.width + HIGHLIGHT_PADDING * 2,
-    height: rect.height + HIGHLIGHT_PADDING * 2,
-  } : null;
+  const highlightRect = rect
+    ? {
+        top: rect.top - HIGHLIGHT_PADDING,
+        left: rect.left - HIGHLIGHT_PADDING,
+        width: rect.width + HIGHLIGHT_PADDING * 2,
+        height: rect.height + HIGHLIGHT_PADDING * 2,
+      }
+    : null;
 
   const content = (
     <>
-      {/* Dark overlay with spotlight effect */}
-      <div 
+      {/* Dark overlay */}
+      <div
         style={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 999998,
-          background: "rgba(0, 0, 0, 0.78)",
-          cursor: "pointer",
-          pointerEvents: "auto",
-        }} 
+          position: "fixed", inset: 0, zIndex: 999998,
+          background: "rgba(0,0,0,0.78)", cursor: "pointer", pointerEvents: "auto",
+        }}
         onClick={handleFinish}
       />
 
-      {/* Highlight spotlight - clear area showing the element */}
+      {/* Spotlight cutout */}
       {highlightRect && (
         <div
           style={{
@@ -264,27 +233,17 @@ export default function GuideTour({ onFinish }) {
             height: `${highlightRect.height}px`,
             zIndex: 999999,
             borderRadius: "12px",
-            boxShadow: "0 0 0 9999px rgba(0, 0, 0, 0.78)",
+            boxShadow: "0 0 0 9999px rgba(0,0,0,0.78)",
             pointerEvents: "none",
             animation: "highlightPulse 2s ease infinite",
           }}
         />
       )}
 
-      {/* Blur backdrop for the entire page when guide is active */}
-      <div style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 999997,
-        pointerEvents: "none",
-      }} />
-
       {/* Tooltip bubble */}
       <div style={{ ...styles.bubble, ...bubblePosition }}>
-        {/* Arrow pointer */}
         {bubblePosition.arrowStyle && <div style={bubblePosition.arrowStyle} />}
 
-        {/* Step indicator dots */}
         <div style={styles.dots}>
           {guideSteps.map((_, i) => (
             <div
@@ -298,17 +257,11 @@ export default function GuideTour({ onFinish }) {
           ))}
         </div>
 
-        {current && (
-          <>
-            <h3 style={styles.bubbleTitle}>{current.title}</h3>
-            <p style={styles.bubbleDesc}>{current.description}</p>
-          </>
-        )}
+        <h3 style={styles.bubbleTitle}>{current.title}</h3>
+        <p style={styles.bubbleDesc}>{current.description}</p>
 
         <div style={styles.bubbleActions}>
-          <button style={styles.skipBtn} onClick={handleFinish}>
-            Skip tour
-          </button>
+          <button style={styles.skipBtn} onClick={handleFinish}>Skip tour</button>
           <button style={styles.nextBtn} onClick={handleNext}>
             {isLast ? "Done ✓" : "Next →"}
           </button>
@@ -328,77 +281,20 @@ export default function GuideTour({ onFinish }) {
     </>
   );
 
-  // Render using Portal to break out of container hierarchy
   return createPortal(content, document.body);
 }
 
 const styles = {
   bubble: {
-    background: "var(--bg-surface)",
-    border: "1.5px solid var(--border-light)",
-    borderRadius: "14px",
-    padding: "20px 22px",
-    width: "300px",
-    boxShadow: "0 12px 48px rgba(0,0,0,0.35)",
-    wordWrap: "break-word",
-    overflowWrap: "break-word",
+    background: "var(--bg-surface)", border: "1.5px solid var(--border-light)",
+    borderRadius: "14px", padding: "20px 22px", width: "300px",
+    boxShadow: "0 12px 48px rgba(0,0,0,0.35)", wordWrap: "break-word", overflowWrap: "break-word",
   },
-  dots: {
-    display: "flex",
-    alignItems: "center",
-    gap: "5px",
-    marginBottom: "12px",
-  },
-  dot: {
-    height: "7px",
-    borderRadius: "4px",
-    background: "var(--border-input)",
-    transition: "width 0.3s, background 0.3s",
-  },
-  bubbleTitle: {
-    fontSize: "16px",
-    fontWeight: 700,
-    color: "var(--text-primary)",
-    fontFamily: "'DM Serif Display', serif",
-    marginBottom: "10px",
-    marginTop: "0",
-    transition: "color 0.25s",
-    lineHeight: 1.3,
-    wordWrap: "break-word",
-  },
-  bubbleDesc: {
-    fontSize: "14px",
-    fontWeight: 400,
-    color: "var(--text-primary)",
-    lineHeight: 1.6,
-    marginBottom: "18px",
-    marginTop: "0",
-    transition: "color 0.25s",
-    wordWrap: "break-word",
-  },
-  bubbleActions: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  skipBtn: {
-    background: "none",
-    border: "none",
-    fontSize: "12px",
-    color: "var(--text-secondary)",
-    cursor: "pointer",
-    padding: "4px 0",
-    transition: "opacity 0.15s",
-  },
-  nextBtn: {
-    background: "var(--primary)",
-    color: "var(--primary-text)",
-    border: "none",
-    borderRadius: "8px",
-    padding: "8px 18px",
-    fontSize: "13px",
-    fontWeight: 700,
-    cursor: "pointer",
-    transition: "background 0.2s",
-  },
+  dots: { display: "flex", alignItems: "center", gap: "5px", marginBottom: "12px" },
+  dot:  { height: "7px", borderRadius: "4px", transition: "width 0.3s, background 0.3s" },
+  bubbleTitle: { fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", fontFamily: "'DM Serif Display', serif", marginBottom: "10px", marginTop: "0", transition: "color 0.25s", lineHeight: 1.3 },
+  bubbleDesc:  { fontSize: "14px", color: "var(--text-primary)", lineHeight: 1.6, marginBottom: "18px", marginTop: "0", transition: "color 0.25s" },
+  bubbleActions: { display: "flex", alignItems: "center", justifyContent: "space-between" },
+  skipBtn: { background: "none", border: "none", fontSize: "12px", color: "var(--text-secondary)", cursor: "pointer", padding: "4px 0" },
+  nextBtn: { background: "var(--primary)", color: "var(--primary-text)", border: "none", borderRadius: "8px", padding: "8px 18px", fontSize: "13px", fontWeight: 700, cursor: "pointer", transition: "background 0.2s" },
 };
