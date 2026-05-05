@@ -92,7 +92,7 @@ function generatePDF(period, subjects) {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function Assessment({ onBack }) {
+export default function Assessment({ user, onBack }) {
   const [selectedPeriod, setSelectedPeriod] = useState("");
   const [dropdownOpen, setDropdownOpen]     = useState(false);
 
@@ -120,7 +120,8 @@ export default function Assessment({ onBack }) {
         .as-table-scroll::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
         @media (max-width: 768px) {
           .as-footer-mobile { flex-direction: column; }
-          .as-period-selector { max-width: 100% !important; }
+          .as-header-container { grid-template-columns: 1fr !important; gap: 12px !important; }
+          .as-header-divider { height: 0 !important; }
         }
       `}</style>
 
@@ -129,48 +130,73 @@ export default function Assessment({ onBack }) {
         {/* Page header */}
         <PageHeader title="Assessment" onBack={onBack} />
 
-        {/* Period selector */}
-        <Card>
-          <label style={styles.fieldLabel}>Period</label>
-          <div style={{ position: "relative", maxWidth: "380px" }} className="as-period-selector">
-            <button
-              className="as-select"
-              style={{
-                ...styles.selectBtn,
-                borderColor: dropdownOpen ? "var(--border-focus)" : "var(--border-input)",
-                boxShadow: dropdownOpen ? "0 0 0 3px var(--shadow-focus)" : "none",
-              }}
-              onClick={() => setDropdownOpen((p) => !p)}
-            >
-              <span style={{ color: selectedPeriod ? "var(--text-primary)" : "var(--text-placeholder)" }}>
-                {selectedPeriod || "Select a period"}
-              </span>
-              <span style={{ transition: "transform 0.2s", transform: dropdownOpen ? "rotate(180deg)" : "rotate(0deg)", color: "var(--text-secondary)" }}>
-                <ChevronIcon />
-              </span>
-            </button>
-
-            {dropdownOpen && (
-              <div style={styles.dropdown}>
-                {mockAssessmentPeriods.map((p) => (
-                  <button
-                    key={p}
-                    className="as-dropdown-item"
-                    style={{
-                      ...styles.dropdownItem,
-                      background: selectedPeriod === p ? "var(--bg-input)" : "transparent",
-                      color: selectedPeriod === p ? "var(--primary)" : "var(--text-secondary)",
-                      fontWeight: selectedPeriod === p ? 700 : 400,
-                    }}
-                    onClick={() => { setSelectedPeriod(p); setDropdownOpen(false); }}
-                  >
-                    {p}
-                  </button>
-                ))}
+        {/* Student Information & Period Selector */}
+        {user && (
+          <Card>
+            <div style={styles.headerContainer} className="as-header-container">
+              {/* Student Name */}
+              <div style={styles.headerSection}>
+                <label style={styles.infoLabel}>Student Name</label>
+                <p style={styles.infoValue}>{user.name}</p>
               </div>
-            )}
-          </div>
-        </Card>
+
+              {/* Divider */}
+              <div style={styles.headerDivider} className="as-header-divider" />
+
+              {/* Student ID */}
+              <div style={styles.headerSection}>
+                <label style={styles.infoLabel}>Student ID</label>
+                <p style={styles.infoValue} style={styles.studentIdValue}>{user.studentId}</p>
+              </div>
+
+              {/* Divider */}
+              <div style={styles.headerDivider} className="as-header-divider" />
+
+              {/* Period Selector */}
+              <div style={styles.headerSection}>
+                <label style={styles.infoLabel}>Period</label>
+                <div style={{ position: "relative" }}>
+                  <button
+                    className="as-select"
+                    style={{
+                      ...styles.selectBtnInline,
+                      borderColor: dropdownOpen ? "var(--border-focus)" : "var(--border-input)",
+                      boxShadow: dropdownOpen ? "0 0 0 3px var(--shadow-focus)" : "none",
+                    }}
+                    onClick={() => setDropdownOpen((p) => !p)}
+                  >
+                    <span style={{ color: selectedPeriod ? "var(--text-primary)" : "var(--text-placeholder)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex: 1, textAlign: "left" }}>
+                      {selectedPeriod || "Select"}
+                    </span>
+                    <span style={{ transition: "transform 0.2s", transform: dropdownOpen ? "rotate(180deg)" : "rotate(0deg)", color: "var(--text-secondary)", flexShrink: 0, marginLeft: "8px" }}>
+                      <ChevronIcon />
+                    </span>
+                  </button>
+
+                  {dropdownOpen && (
+                    <div style={styles.dropdown}>
+                      {mockAssessmentPeriods.map((p) => (
+                        <button
+                          key={p}
+                          className="as-dropdown-item"
+                          style={{
+                            ...styles.dropdownItem,
+                            background: selectedPeriod === p ? "var(--bg-input)" : "transparent",
+                            color: selectedPeriod === p ? "var(--primary)" : "var(--text-secondary)",
+                            fontWeight: selectedPeriod === p ? 700 : 400,
+                          }}
+                          onClick={() => { setSelectedPeriod(p); setDropdownOpen(false); }}
+                        >
+                          {p}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
 
         {/* Empty state - when no period selected */}
         {!selectedPeriod && (
@@ -270,10 +296,17 @@ export default function Assessment({ onBack }) {
 
 const styles = {
   container:   { width: "100%", maxWidth: "1100px" },
+  headerContainer: { display: "grid", gridTemplateColumns: "1fr auto 1fr auto 1fr", alignItems: "flex-end", gap: "20px", gridAutoRows: "max-content" },
+  headerSection: { display: "flex", flexDirection: "column", gap: "6px", minWidth: 0 },
+  headerDivider: { width: "1.5px", height: "56px", background: "var(--border-light)", transition: "background 0.25s" },
+  infoLabel: { fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-secondary)", transition: "color 0.25s" },
+  infoValue: { fontSize: "15px", fontWeight: 600, color: "var(--text-primary)", margin: 0, transition: "color 0.25s", overflow: "hidden", textOverflow: "ellipsis" },
+  studentIdValue: { fontFamily: "'Courier New', monospace", fontSize: "14px", letterSpacing: "0.05em", color: "var(--primary)", fontWeight: 700 },
   fieldLabel:  { display: "block", fontSize: "12px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-secondary)", marginBottom: "10px", transition: "color 0.25s" },
   selectBtn:   { width: "100%", height: "42px", padding: "0 14px", border: "1.5px solid", borderRadius: "8px", background: "var(--bg-input)", color: "var(--text-primary)", fontSize: "14px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between", transition: "border-color 0.2s, box-shadow 0.2s, background 0.25s", fontFamily: "'Source Sans 3', sans-serif" },
-  dropdown:    { position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0, background: "var(--bg-surface)", border: "1.5px solid var(--border-light)", borderRadius: "10px", boxShadow: "0 8px 24px var(--shadow-card)", zIndex: 50, overflow: "hidden" },
-  dropdownItem:{ width: "100%", padding: "11px 16px", border: "none", background: "transparent", fontSize: "13px", textAlign: "left", cursor: "pointer", transition: "background 0.15s, color 0.15s", fontFamily: "'Source Sans 3', sans-serif" },
+  selectBtnInline: { width: "100%", height: "36px", padding: "0 12px", border: "1.5px solid", borderRadius: "8px", background: "var(--bg-input)", color: "var(--text-primary)", fontSize: "13px", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px", transition: "border-color 0.2s, box-shadow 0.2s, background 0.25s", fontFamily: "'Source Sans 3', sans-serif" },
+  dropdown:    { position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0, background: "var(--bg-surface)", border: "1.5px solid var(--border-light)", borderRadius: "10px", boxShadow: "0 8px 24px var(--shadow-card)", zIndex: 50, overflow: "hidden", maxHeight: "300px", overflowY: "auto" },
+  dropdownItem:{ width: "100%", padding: "11px 16px", border: "none", background: "transparent", fontSize: "13px", textAlign: "left", cursor: "pointer", transition: "background 0.15s, color 0.15s", fontFamily: "'Source Sans 3', sans-serif", whiteSpace: "nowrap" },
   emptyState:  { textAlign: "center", padding: "48px 24px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "16px" },
   emptyIcon:   { fontSize: "48px", opacity: 0.6 },
   emptyTitle:  { fontSize: "18px", fontWeight: 700, color: "var(--text-primary)", margin: 0, transition: "color 0.25s" },

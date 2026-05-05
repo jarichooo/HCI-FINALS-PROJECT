@@ -63,7 +63,7 @@ export default function StudentDashboard({ user, onLogout }) {
         .welcome-content { animation: welcomeIn 0.5s ease both 0.2s; opacity: 0; animation-fill-mode: forwards; }
       `}</style>
       {activePage === "Assessment" ? (
-        <Assessment onBack={handleBack} />
+        <Assessment user={user} onBack={handleBack} />
       ) : activePage === "View Student Profile" ? (
         <ViewStudentProfile user={user} onBack={handleBack} />
       ) : activePage === "Edit Student Profile" ? (
