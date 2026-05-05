@@ -7,6 +7,9 @@ export const lightTheme = {
   bgHover:       "#f3f5fa",
   bgGrid:        "rgba(13,47,110,0.04)",
 
+  // Skeleton
+  skeletonBg:    "rgba(13,47,110,0.08)",
+
   // Borders
   borderLight:   "#dce8f8",
   borderInput:   "#c8d6f0",
@@ -45,6 +48,9 @@ export const darkTheme = {
   bgInput:       "#1c2a52",
   bgHover:       "#222e52",
   bgGrid:        "rgba(200,214,240,0.03)",
+
+  // Skeleton
+  skeletonBg:    "rgba(200,214,240,0.12)",
 
   // Borders
   borderLight:   "#243560",
