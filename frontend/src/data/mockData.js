@@ -25,7 +25,35 @@ export function validateStudent(studentId, password) {
   );
 }
 
-// ─── Assessment periods ───────────────────────────────────────────────────────
+// ─── Helper function to generate random schedule values ────────────────────────
+
+function generateRandomTF() {
+  const options = ["M/W", "T/Th", "M/W/F", "F", "M", "W", "T", "Th"];
+  return options[Math.floor(Math.random() * options.length)];
+}
+
+function generateRandomTime() {
+  const hours = [8, 9, 10, 11, 13, 14, 15, 16];
+  const hour = hours[Math.floor(Math.random() * hours.length)];
+  const minute = Math.random() > 0.5 ? "00" : "30";
+  const endHour = hour + 1;
+  return `${hour}:${minute}–${endHour}:${minute}`;
+}
+
+function generateRandomSchedule(tf) {
+  const dayMap = { M: "Monday", W: "Wednesday", F: "Friday", T: "Tuesday", Th: "Thursday" };
+  const days = tf.split("/");
+  const times = [];
+  let startHour = Math.floor(Math.random() * 6) + 8;
+  
+  days.forEach(day => {
+    times.push(`${day}${startHour}:00`);
+  });
+  
+  return times.join(", ");
+}
+
+// ─── Assessment periods with subjects ──────────────────────────────────────────
 
 export const mockAssessmentPeriods = [
   "1st Semester 2024-2025",
@@ -34,70 +62,134 @@ export const mockAssessmentPeriods = [
   "2nd Semester 2023-2024",
 ];
 
-// ─── Enrolled subjects ────────────────────────────────────────────────────────
+// ─── Enrolled subjects by period ───────────────────────────────────────────────
 
-export const mockEnrolledSubjects = [
-  {
-    code: "CS101",
-    subject: "Introduction to Computer Science",
-    description: "Fundamentals of programming and algorithms",
-    units: 3,
-    tf: "M/W",
-    lec: "10:00–11:30",
-    lab: "1:00–2:30",
-    schedule: "M10:00, W10:00",
-  },
-  {
-    code: "MATH201",
-    subject: "Calculus II",
-    description: "Advanced calculus and integration techniques",
-    units: 4,
-    tf: "T/Th",
-    lec: "9:00–10:30",
-    lab: "2:00–3:30",
-    schedule: "T9:00, Th9:00",
-  },
-  {
-    code: "ENG102",
-    subject: "English Composition",
-    description: "Advanced writing and communication skills",
-    units: 3,
-    tf: "M/W/F",
-    lec: "11:00–12:00",
-    lab: "N/A",
-    schedule: "MWF11:00",
-  },
-  {
-    code: "PHYS151",
-    subject: "Physics I",
-    description: "Classical mechanics and motion",
-    units: 4,
-    tf: "T/Th",
-    lec: "1:00–2:30",
-    lab: "3:00–5:00",
-    schedule: "T1:00, Th1:00",
-  },
-  {
-    code: "CHEM101",
-    subject: "General Chemistry",
-    description: "Basic principles of chemistry",
-    units: 3,
-    tf: "M/W",
-    lec: "2:00–3:30",
-    lab: "4:00–6:00",
-    schedule: "M2:00, W2:00",
-  },
-  {
-    code: "HIS105",
-    subject: "World History",
-    description: "Survey of major historical events",
-    units: 3,
-    tf: "F",
-    lec: "10:00–12:00",
-    lab: "N/A",
-    schedule: "F10:00",
-  },
-];
+export const mockEnrolledSubjectsByPeriod = {
+  "1st Semester 2024-2025": [
+    {
+      code: "CS101",
+      subject: "Introduction to Computer Science",
+      description: "Fundamentals of programming and algorithms",
+      units: 3,
+      tf: "M/W",
+      lec: "10:00–11:30",
+      lab: "1:00–2:30",
+      schedule: "M10:00, W10:00",
+    },
+    {
+      code: "MATH201",
+      subject: "Calculus II",
+      description: "Advanced calculus and integration techniques",
+      units: 4,
+      tf: "T/Th",
+      lec: "9:00–10:30",
+      lab: "2:00–3:30",
+      schedule: "T9:00, Th9:00",
+    },
+    {
+      code: "CS315",
+      subject: "Web Development",
+      description: "Modern web development frameworks",
+      units: 3,
+      tf: null,
+      lec: null,
+      lab: null,
+      schedule: null,
+    },
+  ],
+  "2nd Semester 2024-2025": [
+    {
+      code: "ENG102",
+      subject: "English Composition",
+      description: "Advanced writing and communication skills",
+      units: 3,
+      tf: "M/W/F",
+      lec: "11:00–12:00",
+      lab: "N/A",
+      schedule: "MWF11:00",
+    },
+    {
+      code: "PHYS151",
+      subject: "Physics I",
+      description: "Classical mechanics and motion",
+      units: 4,
+      tf: null,
+      lec: null,
+      lab: null,
+      schedule: null,
+    },
+    {
+      code: "CHEM101",
+      subject: "General Chemistry",
+      description: "Basic principles of chemistry",
+      units: 3,
+      tf: "M/W",
+      lec: "2:00–3:30",
+      lab: "4:00–6:00",
+      schedule: "M2:00, W2:00",
+    },
+  ],
+  "1st Semester 2023-2024": [
+    {
+      code: "CS201",
+      subject: "Data Structures",
+      description: "Introduction to data structures and algorithms",
+      units: 3,
+      tf: null,
+      lec: null,
+      lab: null,
+      schedule: null,
+    },
+    {
+      code: "MATH301",
+      subject: "Linear Algebra",
+      description: "Advanced linear algebra concepts",
+      units: 4,
+      tf: "M/W",
+      lec: "13:00–14:30",
+      lab: "N/A",
+      schedule: "M13:00, W13:00",
+    },
+  ],
+  "2nd Semester 2023-2024": [
+    {
+      code: "HIS105",
+      subject: "World History",
+      description: "Survey of major historical events",
+      units: 3,
+      tf: "F",
+      lec: "10:00–12:00",
+      lab: "N/A",
+      schedule: "F10:00",
+    },
+    {
+      code: "BIO102",
+      subject: "Biology II",
+      description: "Cellular and molecular biology",
+      units: 4,
+      tf: null,
+      lec: null,
+      lab: null,
+      schedule: null,
+    },
+  ],
+};
+
+// Function to get subjects with random values generated for missing fields
+export function getEnrolledSubjectsForPeriod(period) {
+  const subjects = mockEnrolledSubjectsByPeriod[period] || [];
+  return subjects.map(subject => ({
+    ...subject,
+    tf: subject.tf || generateRandomTF(),
+    lec: subject.lec || generateRandomTime(),
+    lab: subject.lab || (Math.random() > 0.4 ? generateRandomTime() : "N/A"),
+    schedule: subject.schedule || generateRandomSchedule(subject.tf || generateRandomTF()),
+  }));
+}
+
+// ─── Enrolled subjects (default) ───────────────────────────────────────────────
+
+export const mockEnrolledSubjects = getEnrolledSubjectsForPeriod("1st Semester 2024-2025");
 
 // ─── Curriculum and Grades ────────────────────────────────────────────────────
 

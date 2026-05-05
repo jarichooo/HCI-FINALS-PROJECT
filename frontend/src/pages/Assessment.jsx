@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { mockEnrolledSubjects, mockAssessmentPeriods } from "../data/mockData";
+import { mockAssessmentPeriods, getEnrolledSubjectsForPeriod } from "../data/mockData";
 import PageHeader from "../components/PageHeader";
 import Button from "../components/Button";
 import Card from "../components/Card";
@@ -92,27 +92,37 @@ function generatePDF(period, subjects) {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function Assessment({ onBack }) {
+export default function Assessment({ user, onBack }) {
   const [selectedPeriod, setSelectedPeriod] = useState("");
   const [dropdownOpen, setDropdownOpen]     = useState(false);
 
-  const totalUnits = mockEnrolledSubjects.reduce((sum, s) => sum + s.units, 0);
+  // Get subjects for selected period, with random values for missing fields
+  const currentSubjects = selectedPeriod ? getEnrolledSubjectsForPeriod(selectedPeriod) : [];
+  const totalUnits = currentSubjects.reduce((sum, s) => sum + s.units, 0);
+  const hasSubjects = currentSubjects.length > 0;
 
   return (
     <div style={styles.container}>
       <style>{`
         @keyframes pageIn  { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes tableIn { from { opacity: 0; transform: translateY(8px);  } to { opacity: 1; transform: translateY(0); } }
+        @keyframes emptyIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .as-wrap       { animation: pageIn 0.35s ease both; }
         .as-table-wrap { animation: tableIn 0.4s ease both 0.1s; opacity: 0; animation-fill-mode: forwards; }
+        .as-empty-wrap { animation: emptyIn 0.3s ease both; }
         .as-back:hover          { opacity: 0.65; }
         .as-dropdown-item:hover { background: var(--bg-input) !important; color: var(--text-primary) !important; }
         .as-row:hover td        { background: var(--bg-input) !important; }
-        .as-pdf-btn:hover       { background: var(--primary-hover) !important; transform: translateY(-1px); box-shadow: 0 6px 20px var(--shadow-btn) !important; }
+        .as-pdf-btn:hover:not(:disabled) { background: var(--primary-hover) !important; transform: translateY(-1px); box-shadow: 0 6px 20px var(--shadow-btn) !important; }
         .as-select:hover        { border-color: var(--border-focus) !important; }
         .as-table-scroll::-webkit-scrollbar       { height: 4px; }
         .as-table-scroll::-webkit-scrollbar-track { background: transparent; }
         .as-table-scroll::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
+        @media (max-width: 768px) {
+          .as-footer-mobile { flex-direction: column; }
+          .as-header-container { grid-template-columns: 1fr !important; gap: 12px !important; }
+          .as-header-divider { height: 0 !important; }
+        }
       `}</style>
 
       <div className="as-wrap">
@@ -120,59 +130,101 @@ export default function Assessment({ onBack }) {
         {/* Page header */}
         <PageHeader title="Assessment" onBack={onBack} />
 
-        {/* Period selector */}
-        <Card>
-          <label style={styles.fieldLabel}>Period</label>
-          <div style={{ position: "relative", maxWidth: "380px" }}>
-            <button
-              className="as-select"
-              style={{
-                ...styles.selectBtn,
-                borderColor: dropdownOpen ? "var(--border-focus)" : "var(--border-input)",
-                boxShadow: dropdownOpen ? "0 0 0 3px var(--shadow-focus)" : "none",
-              }}
-              onClick={() => setDropdownOpen((p) => !p)}
-            >
-              <span style={{ color: selectedPeriod ? "var(--text-primary)" : "var(--text-placeholder)" }}>
-                {selectedPeriod || "Select a period"}
-              </span>
-              <span style={{ transition: "transform 0.2s", transform: dropdownOpen ? "rotate(180deg)" : "rotate(0deg)", color: "var(--text-secondary)" }}>
-                <ChevronIcon />
-              </span>
-            </button>
-
-            {dropdownOpen && (
-              <div style={styles.dropdown}>
-                {mockAssessmentPeriods.map((p) => (
-                  <button
-                    key={p}
-                    className="as-dropdown-item"
-                    style={{
-                      ...styles.dropdownItem,
-                      background: selectedPeriod === p ? "var(--bg-input)" : "transparent",
-                      color: selectedPeriod === p ? "var(--primary)" : "var(--text-secondary)",
-                      fontWeight: selectedPeriod === p ? 700 : 400,
-                    }}
-                    onClick={() => { setSelectedPeriod(p); setDropdownOpen(false); }}
-                  >
-                    {p}
-                  </button>
-                ))}
+        {/* Student Information & Period Selector */}
+        {user && (
+          <Card>
+            <div style={styles.headerContainer} className="as-header-container">
+              {/* Student Name */}
+              <div style={styles.headerSection}>
+                <label style={styles.infoLabel}>Student Name</label>
+                <p style={styles.infoValue}>{user.name}</p>
               </div>
-            )}
-          </div>
-        </Card>                          {/* ← was </div>, now </Card> ✓ */}
 
-        {/* Enrolled subjects table */}
-        <Card className="as-table-wrap">
-          <div style={styles.tableHeader}>
-            <div>
-              <h2 style={styles.sectionTitle}>Enrolled Subjects</h2>
-              <p style={styles.sectionSub}>{mockEnrolledSubjects.length} subjects · {totalUnits} total units</p>
+              {/* Divider */}
+              <div style={styles.headerDivider} className="as-header-divider" />
+
+              {/* Student ID */}
+              <div style={styles.headerSection}>
+                <label style={styles.infoLabel}>Student ID</label>
+                <p style={styles.infoValue} style={styles.studentIdValue}>{user.studentId}</p>
+              </div>
+
+              {/* Divider */}
+              <div style={styles.headerDivider} className="as-header-divider" />
+
+              {/* Period Selector */}
+              <div style={styles.headerSection}>
+                <label style={styles.infoLabel}>Period</label>
+                <div style={{ position: "relative" }}>
+                  <button
+                    className="as-select"
+                    style={{
+                      ...styles.selectBtnInline,
+                      borderColor: dropdownOpen ? "var(--border-focus)" : "var(--border-input)",
+                      boxShadow: dropdownOpen ? "0 0 0 3px var(--shadow-focus)" : "none",
+                    }}
+                    onClick={() => setDropdownOpen((p) => !p)}
+                  >
+                    <span style={{ color: selectedPeriod ? "var(--text-primary)" : "var(--text-placeholder)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", flex: 1, textAlign: "left" }}>
+                      {selectedPeriod || "Select"}
+                    </span>
+                    <span style={{ transition: "transform 0.2s", transform: dropdownOpen ? "rotate(180deg)" : "rotate(0deg)", color: "var(--text-secondary)", flexShrink: 0, marginLeft: "8px" }}>
+                      <ChevronIcon />
+                    </span>
+                  </button>
+
+                  {dropdownOpen && (
+                    <div style={styles.dropdown}>
+                      {mockAssessmentPeriods.map((p) => (
+                        <button
+                          key={p}
+                          className="as-dropdown-item"
+                          style={{
+                            ...styles.dropdownItem,
+                            background: selectedPeriod === p ? "var(--bg-input)" : "transparent",
+                            color: selectedPeriod === p ? "var(--primary)" : "var(--text-secondary)",
+                            fontWeight: selectedPeriod === p ? 700 : 400,
+                          }}
+                          onClick={() => { setSelectedPeriod(p); setDropdownOpen(false); }}
+                        >
+                          {p}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-          </div>
+          </Card>
+        )}
 
-          <div className="as-table-scroll" style={styles.tableScroll}>
+        {/* Empty state - when no period selected */}
+        {!selectedPeriod && (
+          <Card className="as-empty-wrap">
+            <div style={styles.emptyState}>
+              <div style={styles.emptyIcon}>📋</div>
+              <h3 style={styles.emptyTitle}>No Period Selected</h3>
+              <p style={styles.emptyDescription}>
+                Select an academic period above to view your enrolled subjects and assessment details.
+              </p>
+            </div>
+          </Card>
+        )}
+
+        {/* Enrolled subjects table - only show if period is selected */}
+        {selectedPeriod && (
+          <Card className="as-table-wrap">
+            <div style={styles.tableHeader}>
+              <div>
+                <h2 style={styles.sectionTitle}>Enrolled Subjects</h2>
+                <p style={styles.sectionSub}>
+                  {hasSubjects ? `${currentSubjects.length} subjects · ${totalUnits} total units` : "No subjects for this period"}
+                </p>
+              </div>
+            </div>
+
+            {hasSubjects ? (
+              <div className="as-table-scroll" style={styles.tableScroll}>
             <table style={styles.table}>
               <thead>
                 <tr>
@@ -187,17 +239,17 @@ export default function Assessment({ onBack }) {
                 </tr>
               </thead>
               <tbody>
-                {mockEnrolledSubjects.map((subject, i) => (
+                {currentSubjects.map((subject, i) => (
                   <tr key={subject.code} className="as-row"
                     style={{ background: i % 2 === 0 ? "transparent" : "var(--bg-page)" }}>
                     <td style={{ ...styles.td, fontWeight: 700, color: "var(--primary)" }}>{subject.code}</td>
                     <td style={styles.td}>{subject.subject}</td>
                     <td style={{ ...styles.td, color: "var(--text-secondary)", fontSize: "12px" }}>{subject.description}</td>
                     <td style={{ ...styles.td, textAlign: "center" }}>{subject.units}</td>
-                    <td style={{ ...styles.td, textAlign: "center" }}>{subject.tf}</td>
-                    <td style={{ ...styles.td, textAlign: "center", fontVariantNumeric: "tabular-nums" }}>{subject.lec}</td>
-                    <td style={{ ...styles.td, textAlign: "center", fontVariantNumeric: "tabular-nums" }}>{subject.lab}</td>
-                    <td style={{ ...styles.td, textAlign: "center", fontVariantNumeric: "tabular-nums" }}>{subject.schedule}</td>
+                    <td style={{ ...styles.td, textAlign: "center" }}>{subject.tf || "–"}</td>
+                    <td style={{ ...styles.td, textAlign: "center", fontVariantNumeric: "tabular-nums" }}>{subject.lec || "–"}</td>
+                    <td style={{ ...styles.td, textAlign: "center", fontVariantNumeric: "tabular-nums" }}>{subject.lab || "–"}</td>
+                    <td style={{ ...styles.td, textAlign: "center", fontSize: "12px" }}>{subject.schedule || "–"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -209,11 +261,17 @@ export default function Assessment({ onBack }) {
                 </tr>
               </tfoot>
             </table>
-          </div>
-        </Card>
+            </div>
+            ) : (
+              <div style={styles.noSubjectsState}>
+                <p style={styles.noSubjectsText}>No subjects enrolled for this period.</p>
+              </div>
+            )}
+          </Card>
+        )}
 
         {/* Footer */}
-        <div style={styles.footer}>
+        <div style={styles.footer} className="as-footer-mobile">
           <p style={styles.footerNote}>
             This assessment is for viewing purposes only. For official records, download the PDF copy.
           </p>
@@ -221,7 +279,8 @@ export default function Assessment({ onBack }) {
             variant="primary"
             size="md"
             className="as-pdf-btn"
-            onClick={() => generatePDF(selectedPeriod, mockEnrolledSubjects)}
+            disabled={!selectedPeriod}
+            onClick={() => generatePDF(selectedPeriod, currentSubjects)}
           >
             <DownloadIcon />
             Download PDF Copy
@@ -237,11 +296,22 @@ export default function Assessment({ onBack }) {
 
 const styles = {
   container:   { width: "100%", maxWidth: "1100px" },
+  headerContainer: { display: "grid", gridTemplateColumns: "1fr auto 1fr auto 1fr", alignItems: "flex-end", gap: "20px", gridAutoRows: "max-content" },
+  headerSection: { display: "flex", flexDirection: "column", gap: "6px", minWidth: 0 },
+  headerDivider: { width: "1.5px", height: "56px", background: "var(--border-light)", transition: "background 0.25s" },
+  infoLabel: { fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-secondary)", transition: "color 0.25s" },
+  infoValue: { fontSize: "15px", fontWeight: 600, color: "var(--text-primary)", margin: 0, transition: "color 0.25s", overflow: "hidden", textOverflow: "ellipsis" },
+  studentIdValue: { fontFamily: "'Courier New', monospace", fontSize: "14px", letterSpacing: "0.05em", color: "var(--primary)", fontWeight: 700 },
   fieldLabel:  { display: "block", fontSize: "12px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-secondary)", marginBottom: "10px", transition: "color 0.25s" },
   selectBtn:   { width: "100%", height: "42px", padding: "0 14px", border: "1.5px solid", borderRadius: "8px", background: "var(--bg-input)", color: "var(--text-primary)", fontSize: "14px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between", transition: "border-color 0.2s, box-shadow 0.2s, background 0.25s", fontFamily: "'Source Sans 3', sans-serif" },
-  dropdown:    { position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0, background: "var(--bg-surface)", border: "1.5px solid var(--border-light)", borderRadius: "10px", boxShadow: "0 8px 24px var(--shadow-card)", zIndex: 50, overflow: "hidden" },
-  dropdownItem:{ width: "100%", padding: "11px 16px", border: "none", background: "transparent", fontSize: "13px", textAlign: "left", cursor: "pointer", transition: "background 0.15s, color 0.15s", fontFamily: "'Source Sans 3', sans-serif" },
-  tableHeader: { display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px" },
+  selectBtnInline: { width: "100%", height: "36px", padding: "0 12px", border: "1.5px solid", borderRadius: "8px", background: "var(--bg-input)", color: "var(--text-primary)", fontSize: "13px", cursor: "pointer", display: "flex", alignItems: "center", gap: "6px", transition: "border-color 0.2s, box-shadow 0.2s, background 0.25s", fontFamily: "'Source Sans 3', sans-serif" },
+  dropdown:    { position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0, background: "var(--bg-surface)", border: "1.5px solid var(--border-light)", borderRadius: "10px", boxShadow: "0 8px 24px var(--shadow-card)", zIndex: 50, overflow: "hidden", maxHeight: "300px", overflowY: "auto" },
+  dropdownItem:{ width: "100%", padding: "11px 16px", border: "none", background: "transparent", fontSize: "13px", textAlign: "left", cursor: "pointer", transition: "background 0.15s, color 0.15s", fontFamily: "'Source Sans 3', sans-serif", whiteSpace: "nowrap" },
+  emptyState:  { textAlign: "center", padding: "48px 24px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "16px" },
+  emptyIcon:   { fontSize: "48px", opacity: 0.6 },
+  emptyTitle:  { fontSize: "18px", fontWeight: 700, color: "var(--text-primary)", margin: 0, transition: "color 0.25s" },
+  emptyDescription:{ fontSize: "14px", color: "var(--text-secondary)", margin: 0, maxWidth: "360px", lineHeight: "1.5", transition: "color 0.25s" },
+  tableHeader: { display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "16px", flexWrap: "wrap" },
   sectionTitle:{ fontSize: "15px", fontWeight: 700, color: "var(--text-primary)", margin: 0, transition: "color 0.25s" },
   sectionSub:  { fontSize: "12px", color: "var(--text-secondary)", margin: "3px 0 0", transition: "color 0.25s" },
   tableScroll: { overflowX: "auto", borderRadius: "8px", border: "1.5px solid var(--border-light)" },
@@ -249,6 +319,8 @@ const styles = {
   th:          { padding: "11px 14px", fontSize: "12px", fontWeight: 700, color: "var(--text-primary)", background: "var(--bg-input)", borderBottom: "1.5px solid var(--border-light)", whiteSpace: "nowrap", letterSpacing: "0.02em", transition: "background 0.25s, color 0.25s" },
   td:          { padding: "12px 14px", color: "var(--text-primary)", borderBottom: "1px solid var(--border-light)", transition: "background 0.15s, color 0.25s", whiteSpace: "nowrap" },
   tfootTd:     { padding: "11px 14px", fontSize: "13px", fontWeight: 600, color: "var(--text-secondary)", borderTop: "1.5px solid var(--border-light)", background: "var(--bg-input)", transition: "background 0.25s, color 0.25s" },
-  footer:      { display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" },
+  noSubjectsState:{ textAlign: "center", padding: "40px 24px", background: "var(--bg-page)", borderRadius: "8px" },
+  noSubjectsText:{ fontSize: "14px", color: "var(--text-secondary)", margin: 0 },
+  footer:      { display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap", marginTop: "24px" },
   footerNote:  { fontSize: "12px", color: "var(--text-placeholder)", margin: 0, transition: "color 0.25s" },
 };
