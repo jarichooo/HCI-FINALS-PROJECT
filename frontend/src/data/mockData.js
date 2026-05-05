@@ -98,3 +98,62 @@ export const mockEnrolledSubjects = [
     schedule: "F10:00",
   },
 ];
+
+// ─── Curriculum and Grades ────────────────────────────────────────────────────
+
+export const mockCurriculum = {
+  curriculum: "Bachelor of Science in Computer Science",
+  status: "Unfinished",
+  grades: [
+    {
+      year: "1st Year, 1st Semester",
+      courses: [
+        { code: "CGCS 101", name: "Introduction to Computing", units: 3.0, grade: 1.50, remark: "Passed", take1: "1.50 (23-1)" },
+        { code: "CGCS 102", name: "Fundamentals of Programming", units: 3.0, grade: 1.20, remark: "Passed", take1: "1.20 (23-1)" },
+        { code: "CSAM 112", name: "Linear Algebra", units: 3.0, grade: 1.25, remark: "Passed", take1: "1.25 (23-1)" },
+        { code: "GE 1", name: "Understanding the Self", units: 3.0, grade: 1.10, remark: "Passed", take1: "1.10 (23-1)" },
+        { code: "GE 2", name: "Readings of Philippine History", units: 3.0, grade: 1.60, remark: "Passed", take1: "1.60 (23-1)" },
+        { code: "GE ELECT 4", name: "Gender and Society", units: 3.0, grade: 1.30, remark: "Passed", take1: "1.30 (23-1)" },
+        { code: "PE 1E", name: "Physical Activities toward Health and Fitness", units: 2.0, grade: 1.20, remark: "Passed", take1: "1.20 (23-1)" },
+        { code: "NSTP 1(LTS)", name: "National Service Training Program 1", units: 3.0, grade: null, remark: null, take1: null, highlighted: true },
+        { code: "NSTP 1(CWTS)", name: "National Service Training Program 1", units: 3.0, grade: 1.50, remark: "Passed", take1: "1.50 (23-1)" },
+        { code: "NSTP 1(ROTC)", name: "National Service Training Program 1", units: 3.0, grade: null, remark: null, take1: null, highlighted: true },
+      ],
+    },
+    {
+      year: "1st Year, 2nd Semester",
+      courses: [
+        { code: "CGCS 103", name: "Intermediate Programming", units: 3.0, grade: 1.60, remark: "Passed", take1: "1.60 (23-2)" },
+        { code: "CSAM 122", name: "Calculus For Computer Science", units: 3.0, grade: 1.50, remark: "Passed", take1: "1.50 (23-2)" },
+        { code: "CSAM 121", name: "Discrete Structures 1", units: 3.0, grade: 1.30, remark: "Passed", take1: "1.30 (23-2)" },
+        { code: "GE 4", name: "Mathematics in the Modern World", units: 3.0, grade: 1.10, remark: "Passed", take1: "1.10 (23-2)" },
+        { code: "GE 3", name: "The Contemporary World", units: 3.0, grade: 1.50, remark: "Passed", take1: "1.50 (23-2)" },
+        { code: "GE 8", name: "Ethics", units: 3.0, grade: 1.25, remark: "Passed", take1: "1.25 (23-2)" },
+        { code: "PE 2E", name: "Physical Activities toward Health and Fitness", units: 2.0, grade: 1.70, remark: "Passed", take1: "1.70 (23-2)" },
+        { code: "NSTP 2(LTS)", name: "National Service Training Program 2", units: 3.0, grade: null, remark: null, take1: null, highlighted: true },
+        { code: "NSTP 2(CWTS)", name: "National Service Training Program 2", units: 3.0, grade: 1.20, remark: "Passed", take1: "1.20 (23-2)" },
+        { code: "NSTP 2(ROTC)", name: "National Service Training Program 2", units: 3.0, grade: null, remark: "Pre-req.", prereq: "NSTP 1(ROTC)", highlighted: true, isRed: true },
+      ],
+    },
+    {
+      year: "2nd Year, 1st Semester",
+      courses: [
+        { code: "CGCS 104", name: "Data Structures and Algorithms", units: 3.0, grade: 1.10, remark: "Passed", take1: "1.10 (24-1)" },
+        { code: "CS 214A", name: "Object Oriented Programming", units: 3.0, grade: 1.60, remark: "Passed", take1: "1.60 (24-1)" },
+        { code: "CS 215", name: "Operating Systems", units: 3.0, grade: 1.50, remark: "Passed", take1: "1.50 (24-1)" },
+        { code: "CSAC 212", name: "Introduction to Artificial Intelligence", units: 3.0, grade: 1.60, remark: "Passed", take1: "1.60 (24-1)" },
+        { code: "CSAM 211", name: "Ordinary Differential Equations", units: 3.0, grade: 1.20, remark: "Passed", take1: "1.20 (24-1)" },
+        { code: "CSAM 212", name: "Discrete Structures 2", units: 3.0, grade: 1.10, remark: "Passed", take1: "1.10 (24-1)" },
+        { code: "GE 6", name: "Art Appreciation", units: 3.0, grade: 1.25, remark: "Passed", take1: "1.25 (24-1)" },
+        { code: "GE 7", name: "Science, Technology and Society", units: 3.0, grade: 1.25, remark: "Passed", take1: "1.25 (24-1)" },
+        { code: "PE 3E", name: "Physical Activities toward Health and Fitness", units: 2.0, grade: 1.20, remark: "Passed", take1: "1.20 (24-1)" },
+      ],
+    },
+    {
+      year: "2nd Year, 2nd Semester",
+      courses: [
+        { code: "CGCS 105", name: "Information Management 1", units: 3.0, grade: 1.25, remark: "Passed", take1: "1.25 (24-2)" },
+      ],
+    },
+  ],
+};

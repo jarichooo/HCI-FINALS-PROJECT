@@ -3,6 +3,7 @@ import DashboardLayout from "../components/DashboardLayout";
 import Assessment from "./Assessment";
 import ViewStudentProfile from "./ViewStudentProfile";
 import EditStudentProfile from "./EditStudentProfile";
+import Grades from "./Reports/Grades";
 import GuideTour from "../components/GuideTour";
 
 const WavingHandIcon = () => (
@@ -67,6 +68,8 @@ export default function StudentDashboard({ user, onLogout }) {
         <ViewStudentProfile user={user} onBack={handleBack} />
       ) : activePage === "Edit Student Profile" ? (
         <EditStudentProfile user={user} onBack={handleBack} />
+      ) : activePage === "Grades" ? (
+        <Grades onBack={handleBack} />
       ) : (
         <div style={styles.wrapper} className="welcome-content">
           <WavingHandIcon />
