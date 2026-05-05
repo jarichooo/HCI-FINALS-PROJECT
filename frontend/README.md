@@ -64,9 +64,7 @@ Open `http://localhost:5173` in your browser.
 |---|---|
 | 2021-00001 | password123 |
 
----
-
-## Project Structure
+```
 frontend/
 └── src/
     ├── pages/
@@ -81,8 +79,7 @@ frontend/
     ├── data/
     │   └── mockData.js
     └── App.jsx
-
-    ---
+```
 
 ## Group 3 — BSCS-3A
 
