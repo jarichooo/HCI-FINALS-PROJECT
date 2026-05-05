@@ -205,3 +205,48 @@ export const mockCurriculum = {
     },
   ],
 };
+
+// ─── Notifications ────────────────────────────────────────────────────────────
+
+export const mockNotifications = [
+  {
+    id: 1,
+    type: "info",
+    title: "Enrollment is now open",
+    body: "2nd Semester 2025-2026 enrollment runs May 5–16. Complete your pre-enlistment first.",
+    time: "Just now",
+    read: false,
+  },
+  {
+    id: 2,
+    type: "warning",
+    title: "Unpaid balance detected",
+    body: "You have an outstanding balance of ₱4,200.00 for this semester. Settle before May 31.",
+    time: "2 hrs ago",
+    read: false,
+  },
+  {
+    id: 3,
+    type: "success",
+    title: "Grade posted: CS 318",
+    body: "Architecture and Organization — Final grade: 1.25. Check your full grades in Reports.",
+    time: "Yesterday",
+    read: false,
+  },
+  {
+    id: 4,
+    type: "info",
+    title: "Teacher evaluation open",
+    body: "Faculty evaluation for 1st Semester 2025-2026 is now available until May 10.",
+    time: "2 days ago",
+    read: true,
+  },
+  {
+    id: 5,
+    type: "warning",
+    title: "Pre-requisite not met",
+    body: "CS 4116 requires CS 3213 to be completed first. Contact your department for guidance.",
+    time: "3 days ago",
+    read: true,
+  },
+];
