@@ -1,5 +1,8 @@
 import { useTheme } from "../../context/ThemeContext";
 import { mockCurriculum } from "../../data/mockData";
+import PageHeader from "../../components/PageHeader";
+import Button from "../../components/Button";
+import Card from "../../components/Card";
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -321,30 +324,20 @@ export default function Grades({ onBack }) {
       <div className="grades-page">
         {/* Header with Download All Button */}
         <div style={styles(theme).headerWrapper}>
-          <div style={styles(theme).header}>
-            <button
-              onClick={onBack}
-              style={styles(theme).backBtn}
-              onMouseEnter={(e) => (e.target.style.opacity = "0.7")}
-              onMouseLeave={(e) => (e.target.style.opacity = "1")}
-            >
-              <BackIcon />
-            </button>
-            <div>
-              <h1 style={styles(theme).title}>Curriculum Evaluation</h1>
-              <p style={styles(theme).subtitle}>Bachelor of Science in Computer Science</p>
-            </div>
-          </div>
-          <button
+          <PageHeader
+            title="Curriculum Evaluation"
+            subtitle="Bachelor of Science in Computer Science"
+            onBack={onBack}
+          />
+          <Button
+            variant="primary"
+            size="md"
             onClick={handleDownloadAll}
-            style={styles(theme).downloadAllBtn}
-            onMouseEnter={(e) => (e.style.backgroundColor = theme.primary)}
-            onMouseLeave={(e) => (e.style.backgroundColor = `${theme.primary}90`)}
             title="Download all tables as PDF"
           >
             <DownloadIcon />
-            <span style={{ marginLeft: "6px", fontSize: "14px", fontWeight: 600 }}>Download All</span>
-          </button>
+            <span style={{ marginLeft: "2px" }}>Download All</span>
+          </Button>
         </div>
 
         {/* Grades by Year */}
@@ -367,15 +360,14 @@ export default function Grades({ onBack }) {
                     </span>
                   </div>
                 </div>
-                <button
+                <Button
+                  variant="secondary"
+                  size="sm"
                   onClick={() => handleDownloadYear(yearData)}
-                  style={styles(theme).downloadYearBtn}
-                  onMouseEnter={(e) => (e.style.opacity = "0.8")}
-                  onMouseLeave={(e) => (e.style.opacity = "1")}
                   title="Download this semester as PDF"
                 >
                   <DownloadIcon />
-                </button>
+                </Button>
               </div>
 
               {/* Courses Table */}

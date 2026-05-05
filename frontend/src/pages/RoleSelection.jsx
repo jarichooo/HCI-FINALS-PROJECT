@@ -1,4 +1,5 @@
 import Layout from "../components/Layout";
+import Button from "../components/Button";
 
 const roles = [
   { label: "Administrator",       key: "admin",     active: false },
@@ -37,19 +38,21 @@ export default function RoleSelection({ onSelectRole }) {
         {/* Role buttons */}
         <div style={styles.roleList}>
           {roles.map((role, i) => (
-            <button
+            <Button
               key={role.key}
-              className={role.active ? "rs-role-btn-active" : ""}
-              disabled={!role.active}
+              variant={role.active ? "primary" : "secondary"}
+              size="lg"
               onClick={() => role.active && onSelectRole(role.key)}
+              disabled={!role.active}
               style={{
-                ...styles.roleBtn,
-                ...(role.active ? styles.roleBtnActive : styles.roleBtnDisabled),
+                width: "100%",
+                opacity: role.active ? 1 : 0.5,
+                animation: `fadeSlideUp 0.45s ease both`,
                 animationDelay: `${i * 0.07}s`,
               }}
             >
               {role.label}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -94,33 +97,5 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
     gap: "10px",
-  },
-  roleBtn: {
-    width: "100%",
-    height: "50px",
-    borderRadius: "10px",
-    border: "1.5px solid",
-    fontSize: "15px",
-    fontWeight: 700,
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    letterSpacing: "0.03em",
-    transition: "background 0.2s, transform 0.15s, box-shadow 0.2s, opacity 0.2s",
-    fontFamily: "'Source Sans 3', sans-serif",
-  },
-  roleBtnActive: {
-    background: "var(--primary)",
-    borderColor: "var(--primary)",
-    color: "var(--primary-text)",
-    boxShadow: "0 4px 14px var(--shadow-btn)",
-  },
-  roleBtnDisabled: {
-    background: "var(--bg-surface)",
-    borderColor: "var(--border-light)",
-    color: "var(--text-secondary)",
-    cursor: "not-allowed",
-    opacity: 0.6,
   },
 };

@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { mockEnrolledSubjects, mockAssessmentPeriods } from "../data/mockData";
+import PageHeader from "../components/PageHeader";
+import Button from "../components/Button";
+import Card from "../components/Card";
 
 // ─── Icons ───────────────────────────────────────────────────────────────────
 
@@ -152,17 +155,10 @@ export default function Assessment({ onBack }) {
       <div className="as-wrap">
 
         {/* ── Page header ── */}
-        <div style={styles.pageHeader}>
-          {onBack && (
-            <button className="as-back" style={styles.backBtn} onClick={onBack} title="Go back">
-              <BackIcon />
-            </button>
-          )}
-          <h1 style={styles.pageTitle}>Assessment</h1>
-        </div>
+        <PageHeader title="Assessment" onBack={onBack} />
 
         {/* ── Period selector ── */}
-        <div style={styles.card}>
+        <Card>
           <label style={styles.fieldLabel}>Period</label>
           <div style={{ position: "relative", maxWidth: "380px" }}>
             <button
@@ -209,7 +205,7 @@ export default function Assessment({ onBack }) {
         </div>
 
         {/* ── Enrolled subjects table ── */}
-        <div style={styles.card} className="as-table-wrap">
+        <Card className="as-table-wrap">
           <div style={styles.tableHeader}>
             <div>
               <h2 style={styles.sectionTitle}>Enrolled Subjects</h2>
@@ -268,21 +264,21 @@ export default function Assessment({ onBack }) {
               </tfoot>
             </table>
           </div>
-        </div>
+        </Card>
 
         {/* ── Footer ── */}
         <div style={styles.footer}>
           <p style={styles.footerNote}>
             This assessment is for viewing purposes only. For official records, download the PDF copy.
           </p>
-          <button
-            className="as-pdf-btn"
-            style={styles.pdfBtn}
+          <Button
+            variant="primary"
+            size="md"
             onClick={() => generatePDF(selectedPeriod, mockEnrolledSubjects)}
           >
             <DownloadIcon />
             Download PDF Copy
-          </button>
+          </Button>
         </div>
 
       </div>

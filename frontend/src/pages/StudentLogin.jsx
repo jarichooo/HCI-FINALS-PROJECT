@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Layout from "../components/Layout";
 import FormCard from "../components/FormCard";
+import Button from "../components/Button";
 import { validateStudent } from "../data/mockData";
 
 // ─── Icons ───────────────────────────────────────────────────────────────────
@@ -200,14 +201,16 @@ export default function StudentLogin({ onBack, onLoginSuccess }) {
             )}
 
             {/* Login button */}
-            <button
+            <Button
               type="submit"
-              className="sl-login-btn"
-              style={{ ...styles.loginBtn, opacity: isLoading ? 0.8 : 1 }}
+              variant="primary"
+              size="lg"
+              loading={isLoading}
               disabled={isLoading}
+              style={{ width: "100%", marginTop: "8px" }}
             >
-              {isLoading ? <span style={styles.spinner} /> : "LOGIN"}
-            </button>
+              LOGIN
+            </Button>
 
             <a href="#" className="sl-forgot" style={styles.forgotLink}>
               Forgot Password?
@@ -216,10 +219,15 @@ export default function StudentLogin({ onBack, onLoginSuccess }) {
         </FormCard>
 
         {/* Back button */}
-        <button className="sl-back" style={styles.backBtn} onClick={onBack}>
+        <Button
+          variant="ghost"
+          size="md"
+          onClick={onBack}
+          style={{ gap: "8px", color: "var(--text-secondary)" }}
+        >
           <BackIcon />
-          <span style={styles.backLabel}>Back to role selection</span>
-        </button>
+          <span>Back to role selection</span>
+        </Button>
       </div>
     </Layout>
   );
