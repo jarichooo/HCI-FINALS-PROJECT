@@ -62,23 +62,53 @@ Open `http://localhost:5173` in your browser.
 ### Test Credentials
 | Student ID | Password |
 |---|---|
-| 2021-00001 | password123 |
+| 2021-00123 | student123 |
+| 2022-00456 | pass456 |
 
 ```
 frontend/
 └── src/
-    ├── pages/
-    │   ├── RoleSelection.jsx
-    │   ├── StudentLogin.jsx
-    │   └── StudentDashboard.jsx
+    ├── assets/
+    |   ├── hero.png
+    |   ├── react.svg
+    |   ├── vite.svg
     ├── components/
+    │   ├── Button.jsx
+    │   ├── Card.jsx
+    │   ├── DashboardLayout.jsx
+    │   ├── FormCard.jsx
+    │   ├── GuideTour.jsx
     │   ├── Layout.jsx
-    │   └── FormCard.jsx
+    │   ├── PageHeader.jsx
+    │   ├── SectionHeader.jsx
+    │   ├── SettingsMenu.jsx
+    │   └── TopBar.jsx
     ├── context/
-    │   └── ThemeContext.jsx
+    │   └── ThemeContext.js
     ├── data/
+    ├── guideSteps.jsx
     │   └── mockData.js
-    └── App.jsx
+    ├── pages/
+    │   └── Reports/
+    |       └── Grades.jsx
+    |   ├── Assessment.jsx
+    |   ├── EditStudentProfile.jsx
+    │   ├── RoleSelection.jsx
+    │   ├── StudentDashboard.jsx
+    │   ├── StudentDashboard.jsx
+    │   └── ViewStudentProfile.jsx
+    ├── theme/
+    │   ├── App.css
+    │   ├── App.jsx
+    │   ├── index.css
+    │   ├── main.jsx
+    │   └── index.css
+    ├── README.md
+    ├── eslint.config.js
+    ├── index.html
+    ├── package-lock.json
+    ├── package.json
+    └── vite.config.js
 ```
 
 ## Group 3 — BSCS-3A
