@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { useTheme } from "../context/ThemeContext";
+import PageHeader from "../components/PageHeader";
+import SectionHeader from "../components/SectionHeader";
+import Card from "../components/Card";
+import Button from "../components/Button";
 
 const BackIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -100,33 +104,29 @@ export default function EditStudentProfile({ user, onBack }) {
       )}
 
       {/* Header */}
-      <div style={styles.header} className="profile-header">
-        <button onClick={onBack} style={styles.backBtn} title="Go back">
-          <BackIcon />
-          <span>Back</span>
-        </button>
-        <div style={styles.headerContent}>
-          <h1 style={styles.title}>Edit Student Profile</h1>
-          <p style={styles.subtitle}>Update your academic enrollment information</p>
-        </div>
-      </div>
+      <PageHeader 
+        title="Edit Student Profile"
+        subtitle="Update your academic enrollment information"
+        onBack={onBack}
+        className="profile-header"
+      />
 
       {/* Main Content */}
       <div style={styles.content} className="profile-container">
         {/* Changes Indicator */}
         {hasChanges && (
-          <div style={styles.changesAlert} className="profile-card">
+          <Card className="profile-card" style={{ display: "flex", alignItems: "center", gap: "12px", backgroundColor: "rgba(220, 38, 38, 0.08)", border: "1.5px solid rgba(220, 38, 38, 0.3)" }}>
             <AlertIcon />
-            <span>You have unsaved changes</span>
-          </div>
+            <span style={{ color: "#dc2626", fontWeight: 600 }}>You have unsaved changes</span>
+          </Card>
         )}
 
         {/* Main Section - Enrollment Data */}
-        <div style={styles.section} className="profile-card">
-          <div style={styles.sectionHeader}>
-            <h2 style={styles.sectionTitle}>Enrollment Information</h2>
-            <p style={styles.sectionDesc}>Edit your academic and enrollment details</p>
-          </div>
+        <Card className="profile-card">
+          <SectionHeader
+            title="Enrollment Information"
+            subtitle="Edit your academic and enrollment details"
+          />
 
           <div style={styles.fieldsContainer}>
             {/* Row 1 */}
@@ -279,22 +279,20 @@ export default function EditStudentProfile({ user, onBack }) {
               </div>
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* Save Button Section */}
         <div style={styles.actionBar}>
-          <button
+          <Button
+            variant={hasChanges ? "primary" : "secondary"}
+            size="md"
             onClick={handleSave}
-            style={{
-              ...styles.saveBtn,
-              ...(hasChanges ? {} : styles.saveBtnDisabled),
-            }}
             disabled={!hasChanges}
             title={hasChanges ? "Save your changes" : "No changes to save"}
           >
             <CheckIcon />
             <span>Save Changes</span>
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useTheme } from "../context/ThemeContext";
+import PageHeader from "../components/PageHeader";
+import SectionHeader from "../components/SectionHeader";
+import Card from "../components/Card";
 
 const BackIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -74,56 +77,58 @@ export default function ViewStudentProfile({ user, onBack }) {
       `}</style>
 
       {/* Header */}
-      <div style={styles.header} className="profile-header">
-        <button onClick={onBack} style={styles.backBtn} title="Go back">
-          <BackIcon />
-          <span>Back</span>
-        </button>
-        <div style={styles.headerContent}>
-          <h1 style={styles.title}>Student Profile</h1>
-          <p style={styles.subtitle}>View your academic enrollment information</p>
-        </div>
-      </div>
+      <PageHeader 
+        title="Student Profile" 
+        subtitle="View your academic enrollment information"
+        onBack={onBack} 
+        className="profile-header"
+      />
 
       {/* Main Content */}
       <div style={styles.content} className="profile-container">
         {/* Quick Info Cards */}
         <div style={styles.infoGrid}>
-          <div style={styles.infoCard}>
-            <div style={styles.infoCardIcon}>
-              <BookIcon />
-            </div>
+          <Card>
             <div style={styles.infoCardContent}>
-              <p style={styles.infoCardLabel}>Course</p>
-              <p style={styles.infoCardValue}>BSCS</p>
+              <div style={styles.infoCardIcon}>
+                <BookIcon />
+              </div>
+              <div>
+                <p style={styles.infoCardLabel}>Course</p>
+                <p style={styles.infoCardValue}>BSCS</p>
+              </div>
             </div>
-          </div>
-          <div style={styles.infoCard}>
-            <div style={styles.infoCardIcon}>
-              <UserIcon />
-            </div>
+          </Card>
+          <Card>
             <div style={styles.infoCardContent}>
-              <p style={styles.infoCardLabel}>Year Level</p>
-              <p style={styles.infoCardValue}>3rd Year</p>
+              <div style={styles.infoCardIcon}>
+                <UserIcon />
+              </div>
+              <div>
+                <p style={styles.infoCardLabel}>Year Level</p>
+                <p style={styles.infoCardValue}>3rd Year</p>
+              </div>
             </div>
-          </div>
-          <div style={styles.infoCard}>
-            <div style={styles.infoCardIcon}>
-              <BookIcon />
-            </div>
+          </Card>
+          <Card>
             <div style={styles.infoCardContent}>
-              <p style={styles.infoCardLabel}>Status</p>
-              <p style={styles.infoCardValue}>Regular</p>
+              <div style={styles.infoCardIcon}>
+                <BookIcon />
+              </div>
+              <div>
+                <p style={styles.infoCardLabel}>Status</p>
+                <p style={styles.infoCardValue}>Regular</p>
+              </div>
             </div>
-          </div>
+          </Card>
         </div>
 
         {/* Main Section - Enrollment Data */}
-        <div style={styles.section} className="profile-card">
-          <div style={styles.sectionHeader}>
-            <h2 style={styles.sectionTitle}>Enrollment Information</h2>
-            <p style={styles.sectionDesc}>Your current academic and enrollment details</p>
-          </div>
+        <Card className="profile-card">
+          <SectionHeader 
+            title="Enrollment Information"
+            subtitle="Your current academic and enrollment details"
+          />
 
           <div style={styles.fieldsContainer}>
             {/* Row 1 */}
@@ -206,7 +211,7 @@ export default function ViewStudentProfile({ user, onBack }) {
               </div>
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* Collapsible Sections */}
         {[
@@ -218,7 +223,7 @@ export default function ViewStudentProfile({ user, onBack }) {
           { id: "medical", title: "Medical Information" },
           { id: "employment", title: "Employment Information" },
         ].map((section) => (
-          <div key={section.id} style={styles.section} className="profile-card">
+          <Card key={section.id} className="profile-card">
             <button
               onClick={() => toggleSection(section.id)}
               style={styles.collapsibleBtn}
@@ -235,7 +240,7 @@ export default function ViewStudentProfile({ user, onBack }) {
                 </p>
               </div>
             )}
-          </div>
+          </Card>
         ))}
       </div>
     </div>
