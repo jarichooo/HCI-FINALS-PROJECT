@@ -99,22 +99,29 @@ export default function Assessment({ onBack }) {
   // Get subjects for selected period, with random values for missing fields
   const currentSubjects = selectedPeriod ? getEnrolledSubjectsForPeriod(selectedPeriod) : [];
   const totalUnits = currentSubjects.reduce((sum, s) => sum + s.units, 0);
+  const hasSubjects = currentSubjects.length > 0;
 
   return (
     <div style={styles.container}>
       <style>{`
         @keyframes pageIn  { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes tableIn { from { opacity: 0; transform: translateY(8px);  } to { opacity: 1; transform: translateY(0); } }
+        @keyframes emptyIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         .as-wrap       { animation: pageIn 0.35s ease both; }
         .as-table-wrap { animation: tableIn 0.4s ease both 0.1s; opacity: 0; animation-fill-mode: forwards; }
+        .as-empty-wrap { animation: emptyIn 0.3s ease both; }
         .as-back:hover          { opacity: 0.65; }
         .as-dropdown-item:hover { background: var(--bg-input) !important; color: var(--text-primary) !important; }
         .as-row:hover td        { background: var(--bg-input) !important; }
-        .as-pdf-btn:hover       { background: var(--primary-hover) !important; transform: translateY(-1px); box-shadow: 0 6px 20px var(--shadow-btn) !important; }
+        .as-pdf-btn:hover:not(:disabled) { background: var(--primary-hover) !important; transform: translateY(-1px); box-shadow: 0 6px 20px var(--shadow-btn) !important; }
         .as-select:hover        { border-color: var(--border-focus) !important; }
         .as-table-scroll::-webkit-scrollbar       { height: 4px; }
         .as-table-scroll::-webkit-scrollbar-track { background: transparent; }
         .as-table-scroll::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
+        @media (max-width: 768px) {
+          .as-footer-mobile { flex-direction: column; }
+          .as-period-selector { max-width: 100% !important; }
+        }
       `}</style>
 
       <div className="as-wrap">
@@ -125,7 +132,7 @@ export default function Assessment({ onBack }) {
         {/* Period selector */}
         <Card>
           <label style={styles.fieldLabel}>Period</label>
-          <div style={{ position: "relative", maxWidth: "380px" }}>
+          <div style={{ position: "relative", maxWidth: "380px" }} className="as-period-selector">
             <button
               className="as-select"
               style={{
@@ -163,18 +170,35 @@ export default function Assessment({ onBack }) {
               </div>
             )}
           </div>
-        </Card>                          {/* ← was </div>, now </Card> ✓ */}
+        </Card>
 
-        {/* Enrolled subjects table */}
-        <Card className="as-table-wrap">
-          <div style={styles.tableHeader}>
-            <div>
-              <h2 style={styles.sectionTitle}>Enrolled Subjects</h2>
-              <p style={styles.sectionSub}>{currentSubjects.length} subjects · {totalUnits} total units</p>
+        {/* Empty state - when no period selected */}
+        {!selectedPeriod && (
+          <Card className="as-empty-wrap">
+            <div style={styles.emptyState}>
+              <div style={styles.emptyIcon}>📋</div>
+              <h3 style={styles.emptyTitle}>No Period Selected</h3>
+              <p style={styles.emptyDescription}>
+                Select an academic period above to view your enrolled subjects and assessment details.
+              </p>
             </div>
-          </div>
+          </Card>
+        )}
 
-          <div className="as-table-scroll" style={styles.tableScroll}>
+        {/* Enrolled subjects table - only show if period is selected */}
+        {selectedPeriod && (
+          <Card className="as-table-wrap">
+            <div style={styles.tableHeader}>
+              <div>
+                <h2 style={styles.sectionTitle}>Enrolled Subjects</h2>
+                <p style={styles.sectionSub}>
+                  {hasSubjects ? `${currentSubjects.length} subjects · ${totalUnits} total units` : "No subjects for this period"}
+                </p>
+              </div>
+            </div>
+
+            {hasSubjects ? (
+              <div className="as-table-scroll" style={styles.tableScroll}>
             <table style={styles.table}>
               <thead>
                 <tr>
@@ -196,10 +220,10 @@ export default function Assessment({ onBack }) {
                     <td style={styles.td}>{subject.subject}</td>
                     <td style={{ ...styles.td, color: "var(--text-secondary)", fontSize: "12px" }}>{subject.description}</td>
                     <td style={{ ...styles.td, textAlign: "center" }}>{subject.units}</td>
-                    <td style={{ ...styles.td, textAlign: "center" }}>{subject.tf}</td>
-                    <td style={{ ...styles.td, textAlign: "center", fontVariantNumeric: "tabular-nums" }}>{subject.lec}</td>
-                    <td style={{ ...styles.td, textAlign: "center", fontVariantNumeric: "tabular-nums" }}>{subject.lab}</td>
-                    <td style={{ ...styles.td, textAlign: "center", fontVariantNumeric: "tabular-nums" }}>{subject.schedule}</td>
+                    <td style={{ ...styles.td, textAlign: "center" }}>{subject.tf || "–"}</td>
+                    <td style={{ ...styles.td, textAlign: "center", fontVariantNumeric: "tabular-nums" }}>{subject.lec || "–"}</td>
+                    <td style={{ ...styles.td, textAlign: "center", fontVariantNumeric: "tabular-nums" }}>{subject.lab || "–"}</td>
+                    <td style={{ ...styles.td, textAlign: "center", fontSize: "12px" }}>{subject.schedule || "–"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -211,11 +235,17 @@ export default function Assessment({ onBack }) {
                 </tr>
               </tfoot>
             </table>
-          </div>
-        </Card>
+            </div>
+            ) : (
+              <div style={styles.noSubjectsState}>
+                <p style={styles.noSubjectsText}>No subjects enrolled for this period.</p>
+              </div>
+            )}
+          </Card>
+        )}
 
         {/* Footer */}
-        <div style={styles.footer}>
+        <div style={styles.footer} className="as-footer-mobile">
           <p style={styles.footerNote}>
             This assessment is for viewing purposes only. For official records, download the PDF copy.
           </p>
@@ -223,6 +253,7 @@ export default function Assessment({ onBack }) {
             variant="primary"
             size="md"
             className="as-pdf-btn"
+            disabled={!selectedPeriod}
             onClick={() => generatePDF(selectedPeriod, currentSubjects)}
           >
             <DownloadIcon />
@@ -243,7 +274,11 @@ const styles = {
   selectBtn:   { width: "100%", height: "42px", padding: "0 14px", border: "1.5px solid", borderRadius: "8px", background: "var(--bg-input)", color: "var(--text-primary)", fontSize: "14px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "space-between", transition: "border-color 0.2s, box-shadow 0.2s, background 0.25s", fontFamily: "'Source Sans 3', sans-serif" },
   dropdown:    { position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0, background: "var(--bg-surface)", border: "1.5px solid var(--border-light)", borderRadius: "10px", boxShadow: "0 8px 24px var(--shadow-card)", zIndex: 50, overflow: "hidden" },
   dropdownItem:{ width: "100%", padding: "11px 16px", border: "none", background: "transparent", fontSize: "13px", textAlign: "left", cursor: "pointer", transition: "background 0.15s, color 0.15s", fontFamily: "'Source Sans 3', sans-serif" },
-  tableHeader: { display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px" },
+  emptyState:  { textAlign: "center", padding: "48px 24px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "16px" },
+  emptyIcon:   { fontSize: "48px", opacity: 0.6 },
+  emptyTitle:  { fontSize: "18px", fontWeight: 700, color: "var(--text-primary)", margin: 0, transition: "color 0.25s" },
+  emptyDescription:{ fontSize: "14px", color: "var(--text-secondary)", margin: 0, maxWidth: "360px", lineHeight: "1.5", transition: "color 0.25s" },
+  tableHeader: { display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px", gap: "16px", flexWrap: "wrap" },
   sectionTitle:{ fontSize: "15px", fontWeight: 700, color: "var(--text-primary)", margin: 0, transition: "color 0.25s" },
   sectionSub:  { fontSize: "12px", color: "var(--text-secondary)", margin: "3px 0 0", transition: "color 0.25s" },
   tableScroll: { overflowX: "auto", borderRadius: "8px", border: "1.5px solid var(--border-light)" },
@@ -251,6 +286,8 @@ const styles = {
   th:          { padding: "11px 14px", fontSize: "12px", fontWeight: 700, color: "var(--text-primary)", background: "var(--bg-input)", borderBottom: "1.5px solid var(--border-light)", whiteSpace: "nowrap", letterSpacing: "0.02em", transition: "background 0.25s, color 0.25s" },
   td:          { padding: "12px 14px", color: "var(--text-primary)", borderBottom: "1px solid var(--border-light)", transition: "background 0.15s, color 0.25s", whiteSpace: "nowrap" },
   tfootTd:     { padding: "11px 14px", fontSize: "13px", fontWeight: 600, color: "var(--text-secondary)", borderTop: "1.5px solid var(--border-light)", background: "var(--bg-input)", transition: "background 0.25s, color 0.25s" },
-  footer:      { display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" },
+  noSubjectsState:{ textAlign: "center", padding: "40px 24px", background: "var(--bg-page)", borderRadius: "8px" },
+  noSubjectsText:{ fontSize: "14px", color: "var(--text-secondary)", margin: 0 },
+  footer:      { display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", flexWrap: "wrap", marginTop: "24px" },
   footerNote:  { fontSize: "12px", color: "var(--text-placeholder)", margin: 0, transition: "color 0.25s" },
 };
