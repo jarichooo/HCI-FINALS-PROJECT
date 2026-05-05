@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { guideSteps } from "../data/guideSteps";
 
 function getBubblePosition(rect, position) {
   if (!rect) {
     return {
       position: "fixed",
-      zIndex: 10001,
+      zIndex: 1000001,
       animation: "bubblePop 0.25s ease both",
       top: "50%",
       left: "50%",
@@ -15,10 +16,12 @@ function getBubblePosition(rect, position) {
 
   const GAP = 20;
   const BUBBLE_WIDTH = 300;
+  const BUBBLE_HEIGHT = 220; // Approximate height including arrow space
   const ARROW_SIZE = 8;
 
   // Get viewport dimensions
   const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
 
   // Element center coordinates
   const elementCenterX = rect.left + rect.width / 2;
@@ -37,10 +40,18 @@ function getBubblePosition(rect, position) {
         bubbleLeft = viewportWidth - BUBBLE_WIDTH - 16;
       }
 
+      // Constrain top to viewport
+      if (bubbleTop + BUBBLE_HEIGHT > viewportHeight - 16) {
+        bubbleTop = Math.max(16, viewportHeight - BUBBLE_HEIGHT - 16);
+      }
+
+      // Calculate arrow position to point at element's center
+      const arrowLeftPos = Math.max(16, Math.min(elementCenterX - bubbleLeft, BUBBLE_WIDTH - 16));
+
       arrowStyle = {
         position: "absolute",
         top: `-${ARROW_SIZE * 2}px`,
-        left: `${Math.min(20, rect.width / 2)}px`,
+        left: `${arrowLeftPos}px`,
         width: "0",
         height: "0",
         borderStyle: "solid",
@@ -54,10 +65,18 @@ function getBubblePosition(rect, position) {
       bubbleTop = rect.bottom + GAP;
       bubbleLeft = Math.max(16, rect.right - BUBBLE_WIDTH);
 
+      // Constrain top to viewport
+      if (bubbleTop + BUBBLE_HEIGHT > viewportHeight - 16) {
+        bubbleTop = Math.max(16, viewportHeight - BUBBLE_HEIGHT - 16);
+      }
+
+      // Calculate arrow position to point at element's center
+      const arrowRightPos = Math.max(16, Math.min(bubbleLeft + BUBBLE_WIDTH - elementCenterX, BUBBLE_WIDTH - 16));
+
       arrowStyle = {
         position: "absolute",
         top: `-${ARROW_SIZE * 2}px`,
-        right: `${Math.min(20, rect.width / 2)}px`,
+        right: `${arrowRightPos}px`,
         width: "0",
         height: "0",
         borderStyle: "solid",
@@ -69,14 +88,17 @@ function getBubblePosition(rect, position) {
     case "right":
       // Position bubble to the right of element, vertically centered
       bubbleLeft = rect.right + GAP;
-      bubbleTop = Math.max(16, elementCenterY - 100); // Approximate half bubble height
+      bubbleTop = elementCenterY - BUBBLE_HEIGHT / 2;
+
+      // Constrain within viewport
+      bubbleTop = Math.max(16, Math.min(bubbleTop, viewportHeight - BUBBLE_HEIGHT - 16));
 
       // If bubble would go off-screen to the right, position to the left instead
       if (bubbleLeft + BUBBLE_WIDTH > viewportWidth - 16) {
         bubbleLeft = rect.left - BUBBLE_WIDTH - GAP;
         arrowStyle = {
           position: "absolute",
-          top: "50%",
+          top: `${elementCenterY - bubbleTop}px`,
           right: `-${ARROW_SIZE * 2}px`,
           transform: "translateY(-50%)",
           width: "0",
@@ -88,7 +110,7 @@ function getBubblePosition(rect, position) {
       } else {
         arrowStyle = {
           position: "absolute",
-          top: "50%",
+          top: `${elementCenterY - bubbleTop}px`,
           left: `-${ARROW_SIZE * 2}px`,
           transform: "translateY(-50%)",
           width: "0",
@@ -103,14 +125,17 @@ function getBubblePosition(rect, position) {
     case "left":
       // Position bubble to the left of element, vertically centered
       bubbleLeft = rect.left - BUBBLE_WIDTH - GAP;
-      bubbleTop = Math.max(16, elementCenterY - 100); // Approximate half bubble height
+      bubbleTop = elementCenterY - BUBBLE_HEIGHT / 2;
+
+      // Constrain within viewport
+      bubbleTop = Math.max(16, Math.min(bubbleTop, viewportHeight - BUBBLE_HEIGHT - 16));
 
       // If bubble would go off-screen to the left, position to the right instead
       if (bubbleLeft < 16) {
         bubbleLeft = rect.right + GAP;
         arrowStyle = {
           position: "absolute",
-          top: "50%",
+          top: `${elementCenterY - bubbleTop}px`,
           left: `-${ARROW_SIZE * 2}px`,
           transform: "translateY(-50%)",
           width: "0",
@@ -122,7 +147,7 @@ function getBubblePosition(rect, position) {
       } else {
         arrowStyle = {
           position: "absolute",
-          top: "50%",
+          top: `${elementCenterY - bubbleTop}px`,
           right: `-${ARROW_SIZE * 2}px`,
           transform: "translateY(-50%)",
           width: "0",
@@ -139,10 +164,18 @@ function getBubblePosition(rect, position) {
       bubbleTop = rect.bottom + GAP;
       bubbleLeft = Math.max(16, elementCenterX - BUBBLE_WIDTH / 2);
 
+      // Constrain within viewport
+      if (bubbleLeft + BUBBLE_WIDTH > viewportWidth - 16) {
+        bubbleLeft = viewportWidth - BUBBLE_WIDTH - 16;
+      }
+      if (bubbleTop + BUBBLE_HEIGHT > viewportHeight - 16) {
+        bubbleTop = Math.max(16, viewportHeight - BUBBLE_HEIGHT - 16);
+      }
+
       arrowStyle = {
         position: "absolute",
         top: `-${ARROW_SIZE * 2}px`,
-        left: `${BUBBLE_WIDTH / 2 - ARROW_SIZE}px`,
+        left: `${Math.max(16, Math.min(elementCenterX - bubbleLeft, BUBBLE_WIDTH - 16))}px`,
         width: "0",
         height: "0",
         borderStyle: "solid",
@@ -153,7 +186,7 @@ function getBubblePosition(rect, position) {
 
   return {
     position: "fixed",
-    zIndex: 10001,
+    zIndex: 1000001,
     animation: "bubblePop 0.25s ease both",
     top: `${bubbleTop}px`,
     left: `${bubbleLeft}px`,
@@ -194,37 +227,62 @@ export default function GuideTour({ onFinish }) {
   const anchor = document.querySelector(`[data-guide="${current.id}"]`);
   const rect = anchor ? anchor.getBoundingClientRect() : null;
 
-  // Debug logging
-  console.log(`Guide step ${step}:`, current.id, 'anchor found:', !!anchor, 'rect:', rect);
-
   const bubblePosition = getBubblePosition(rect, current.position);
 
-  return (
-    <>
-      {/* Dark overlay */}
-      <div style={{...styles.overlay, background: 'rgba(0,0,0,0.1)'}} onClick={handleFinish} />
+  // Calculate highlight box with padding
+  const HIGHLIGHT_PADDING = 12;
+  const highlightRect = rect ? {
+    top: rect.top - HIGHLIGHT_PADDING,
+    left: rect.left - HIGHLIGHT_PADDING,
+    width: rect.width + HIGHLIGHT_PADDING * 2,
+    height: rect.height + HIGHLIGHT_PADDING * 2,
+  } : null;
 
-      {/* Debug overlay to show element positions */}
-      {rect && (
+  const content = (
+    <>
+      {/* Dark overlay with spotlight effect */}
+      <div 
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 999998,
+          background: "rgba(0, 0, 0, 0.78)",
+          cursor: "pointer",
+          pointerEvents: "auto",
+        }} 
+        onClick={handleFinish}
+      />
+
+      {/* Highlight spotlight - clear area showing the element */}
+      {highlightRect && (
         <div
           style={{
-            position: 'fixed',
-            top: rect.top,
-            left: rect.left,
-            width: rect.width,
-            height: rect.height,
-            background: 'rgba(255, 0, 0, 0.2)',
-            border: '2px solid red',
-            zIndex: 10002,
-            pointerEvents: 'none'
+            position: "fixed",
+            top: `${highlightRect.top}px`,
+            left: `${highlightRect.left}px`,
+            width: `${highlightRect.width}px`,
+            height: `${highlightRect.height}px`,
+            zIndex: 999999,
+            borderRadius: "12px",
+            boxShadow: "0 0 0 9999px rgba(0, 0, 0, 0.78)",
+            pointerEvents: "none",
+            animation: "highlightPulse 2s ease infinite",
           }}
         />
       )}
 
+      {/* Blur backdrop for the entire page when guide is active */}
+      <div style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 999997,
+        pointerEvents: "none",
+      }} />
+
       {/* Tooltip bubble */}
-      <div style={{ ...styles.bubble, ...bubblePosition, border: '2px solid red' }}>
+      <div style={{ ...styles.bubble, ...bubblePosition }}>
         {/* Arrow pointer */}
-        {bubblePosition.arrowStyle && <div style={{...bubblePosition.arrowStyle, borderColor: 'red transparent transparent transparent'}} />}
+        {bubblePosition.arrowStyle && <div style={bubblePosition.arrowStyle} />}
 
         {/* Step indicator dots */}
         <div style={styles.dots}>
@@ -263,37 +321,25 @@ export default function GuideTour({ onFinish }) {
           to   { opacity: 1; transform: scale(1) translateY(0); }
         }
         @keyframes highlightPulse {
-          0%, 100% { box-shadow: 0 0 0 4px rgba(74,114,204,0.3), 0 0 0 9999px rgba(0,0,0,0.55); }
-          50%       { box-shadow: 0 0 0 8px rgba(74,114,204,0.15), 0 0 0 9999px rgba(0,0,0,0.55); }
+          0%, 100% { box-shadow: 0 0 0 9999px rgba(0,0,0,0.78), 0 0 20px rgba(74,114,204,0.8) inset; }
+          50%       { box-shadow: 0 0 0 9999px rgba(0,0,0,0.78), 0 0 35px rgba(74,114,204,1) inset; }
         }
       `}</style>
     </>
   );
+
+  // Render using Portal to break out of container hierarchy
+  return createPortal(content, document.body);
 }
 
 const styles = {
-  overlay: {
-    position: "fixed",
-    inset: 0,
-    zIndex: 10000,
-    background: "transparent",
-    cursor: "pointer",
-  },
-  highlight: {
-    position: "fixed",
-    zIndex: 10001,
-    borderRadius: "10px",
-    pointerEvents: "none",
-    animation: "highlightPulse 2s ease infinite",
-    boxShadow: "0 0 0 4px rgba(74,114,204,0.4), 0 0 0 9999px rgba(0,0,0,0.55)",
-  },
   bubble: {
     background: "var(--bg-surface)",
     border: "1.5px solid var(--border-light)",
     borderRadius: "14px",
     padding: "20px 22px",
     width: "300px",
-    boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+    boxShadow: "0 12px 48px rgba(0,0,0,0.35)",
     wordWrap: "break-word",
     overflowWrap: "break-word",
   },
