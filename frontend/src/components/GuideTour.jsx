@@ -240,15 +240,13 @@ export default function GuideTour({ onFinish }) {
 
   const content = (
     <>
-      {/* Blur overlay with spotlight effect */}
+      {/* Dark overlay with spotlight effect */}
       <div 
         style={{
           position: "fixed",
           inset: 0,
           zIndex: 999998,
-          background: "rgba(0, 0, 0, 0.65)",
-          backdropFilter: "blur(5px)",
-          WebkitBackdropFilter: "blur(5px)",
+          background: "rgba(0, 0, 0, 0.78)",
           cursor: "pointer",
           pointerEvents: "auto",
         }} 
@@ -266,7 +264,7 @@ export default function GuideTour({ onFinish }) {
             height: `${highlightRect.height}px`,
             zIndex: 999999,
             borderRadius: "12px",
-            boxShadow: "0 0 0 9999px rgba(0, 0, 0, 0.65)",
+            boxShadow: "0 0 0 9999px rgba(0, 0, 0, 0.78)",
             pointerEvents: "none",
             animation: "highlightPulse 2s ease infinite",
           }}
@@ -323,8 +321,8 @@ export default function GuideTour({ onFinish }) {
           to   { opacity: 1; transform: scale(1) translateY(0); }
         }
         @keyframes highlightPulse {
-          0%, 100% { box-shadow: 0 0 0 9999px rgba(0,0,0,0.65), 0 0 15px rgba(74,114,204,0.5) inset; }
-          50%       { box-shadow: 0 0 0 9999px rgba(0,0,0,0.65), 0 0 25px rgba(74,114,204,0.8) inset; }
+          0%, 100% { box-shadow: 0 0 0 9999px rgba(0,0,0,0.78), 0 0 20px rgba(74,114,204,0.8) inset; }
+          50%       { box-shadow: 0 0 0 9999px rgba(0,0,0,0.78), 0 0 35px rgba(74,114,204,1) inset; }
         }
       `}</style>
     </>
