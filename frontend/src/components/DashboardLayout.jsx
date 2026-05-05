@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTheme } from "../context/ThemeContext";
 import { useEffect, useRef } from "react";
 import SettingsMenu from "./SettingsMenu";
+import { mockNotifications } from "../data/mockData";
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -52,6 +53,287 @@ const WarningIcon = () => (
     <circle cx="12" cy="17" r="1" fill="#dc2626" />
   </svg>
 );
+
+const BellIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+    <path d="M13.73 21a2 2 0 01-3.46 0" />
+  </svg>
+);
+
+function NotificationPanel({ onNavigate }) {
+  const [notifications, setNotifications] = useState(
+    mockNotifications.map((n) => ({ ...n }))
+  );
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    const fn = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", fn);
+    return () => document.removeEventListener("mousedown", fn);
+  }, []);
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  const markAllRead = () =>
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+
+  const markRead = (id) =>
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+    );
+
+  const TYPE_STYLES = {
+    info:    { dot: "#4a72cc", bg: "rgba(74,114,204,0.10)" },
+    warning: { dot: "#d97706", bg: "rgba(217,119,6,0.10)"  },
+    success: { dot: "#16a34a", bg: "rgba(22,163,74,0.10)"  },
+  };
+
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      {/* Bell button */}
+      <button
+        className="db-icon-btn"
+        style={npStyles.bellBtn}
+        onClick={() => setOpen((o) => !o)}
+        title="Notifications"
+      >
+        <BellIcon />
+        {unreadCount > 0 && (
+          <span style={npStyles.badge}>
+            {unreadCount > 9 ? "9+" : unreadCount}
+          </span>
+        )}
+      </button>
+
+      {/* Panel */}
+      {open && (
+        <div style={npStyles.panel}>
+          {/* Header */}
+          <div style={npStyles.panelHeader}>
+            <div>
+              <p style={npStyles.panelTitle}>Notifications</p>
+              {unreadCount > 0 && (
+                <p style={npStyles.panelSub}>{unreadCount} unread</p>
+              )}
+            </div>
+            {unreadCount > 0 && (
+              <button
+                style={npStyles.markAllBtn}
+                onClick={markAllRead}
+                onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.7")}
+                onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+              >
+                Mark all read
+              </button>
+            )}
+          </div>
+
+          {/* List */}
+          <div style={npStyles.list} className="db-notif-list">
+            {notifications.length === 0 ? (
+              <p style={npStyles.empty}>No notifications</p>
+            ) : (
+              notifications.map((n) => {
+                const ts = TYPE_STYLES[n.type] || TYPE_STYLES.info;
+                return (
+                  <button
+                    key={n.id}
+                    style={{
+                      ...npStyles.item,
+                      background: n.read ? "transparent" : ts.bg,
+                    }}
+                    onClick={() => {
+                      markRead(n.id);
+                      setOpen(false);
+                      if (onNavigate) onNavigate(n.title);
+                    }}
+                    onMouseEnter={(e) =>
+                      (e.currentTarget.style.background = "var(--bg-input)")
+                    }
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.background = n.read
+                        ? "transparent"
+                        : ts.bg)
+                    }
+                  >
+                    <span
+                      style={{ ...npStyles.dot, background: ts.dot, opacity: n.read ? 0.35 : 1 }}
+                    />
+                    <div style={npStyles.itemBody}>
+                      <div style={npStyles.itemTop}>
+                        <span
+                          style={{
+                            ...npStyles.itemTitle,
+                            color: n.read
+                              ? "var(--text-secondary)"
+                              : "var(--text-primary)",
+                            fontWeight: n.read ? 600 : 700,
+                          }}
+                        >
+                          {n.title}
+                        </span>
+                        <span style={npStyles.itemTime}>{n.time}</span>
+                      </div>
+                      <p style={npStyles.itemDesc}>{n.body}</p>
+                    </div>
+                  </button>
+                );
+              })
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const npStyles = {
+  bellBtn: {
+    position: "relative",
+    width: "34px",
+    height: "34px",
+    borderRadius: "8px",
+    border: "1.5px solid var(--border-light)",
+    background: "transparent",
+    color: "var(--text-secondary)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    cursor: "pointer",
+    transition: "background 0.2s, opacity 0.15s",
+  },
+  badge: {
+    position: "absolute",
+    top: "-5px",
+    right: "-5px",
+    minWidth: "16px",
+    height: "16px",
+    borderRadius: "8px",
+    background: "#dc2626",
+    color: "#fff",
+    fontSize: "10px",
+    fontWeight: 700,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "0 3px",
+    pointerEvents: "none",
+    fontFamily: "'Source Sans 3', sans-serif",
+  },
+  panel: {
+    position: "absolute",
+    top: "calc(100% + 8px)",
+    right: 0,
+    width: "340px",
+    background: "var(--bg-surface)",
+    border: "1.5px solid var(--border-light)",
+    borderRadius: "14px",
+    boxShadow: "0 8px 32px var(--shadow-card)",
+    overflow: "hidden",
+    animation: "dropdownPop 0.2s ease both",
+    zIndex: 500,
+  },
+  panelHeader: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "14px 16px 12px",
+    borderBottom: "1.5px solid var(--border-light)",
+  },
+  panelTitle: {
+    fontSize: "14px",
+    fontWeight: 700,
+    color: "var(--text-primary)",
+    fontFamily: "'DM Serif Display', serif",
+    margin: 0,
+    transition: "color 0.25s",
+  },
+  panelSub: {
+    fontSize: "11px",
+    color: "var(--text-secondary)",
+    margin: "2px 0 0",
+    transition: "color 0.25s",
+  },
+  markAllBtn: {
+    background: "transparent",
+    border: "none",
+    fontSize: "11px",
+    fontWeight: 700,
+    color: "var(--primary)",
+    cursor: "pointer",
+    fontFamily: "'Source Sans 3', sans-serif",
+    transition: "opacity 0.15s",
+    padding: 0,
+  },
+  list: {
+    maxHeight: "360px",
+    overflowY: "auto",
+    display: "flex",
+    flexDirection: "column",
+  },
+  empty: {
+    padding: "28px 16px",
+    textAlign: "center",
+    fontSize: "13px",
+    color: "var(--text-placeholder)",
+    margin: 0,
+  },
+  item: {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: "10px",
+    padding: "12px 16px",
+    border: "none",
+    borderBottom: "1px solid var(--border-light)",
+    cursor: "pointer",
+    textAlign: "left",
+    transition: "background 0.15s",
+    fontFamily: "'Source Sans 3', sans-serif",
+    width: "100%",
+  },
+  dot: {
+    width: "8px",
+    height: "8px",
+    borderRadius: "50%",
+    flexShrink: 0,
+    marginTop: "5px",
+    transition: "opacity 0.2s",
+  },
+  itemBody: {
+    flex: 1,
+    minWidth: 0,
+  },
+  itemTop: {
+    display: "flex",
+    alignItems: "baseline",
+    justifyContent: "space-between",
+    gap: "8px",
+    marginBottom: "3px",
+  },
+  itemTitle: {
+    fontSize: "13px",
+    transition: "color 0.15s, font-weight 0.15s",
+    lineHeight: 1.3,
+  },
+  itemTime: {
+    fontSize: "10px",
+    color: "var(--text-placeholder)",
+    flexShrink: 0,
+    whiteSpace: "nowrap",
+  },
+  itemDesc: {
+    fontSize: "12px",
+    color: "var(--text-secondary)",
+    margin: 0,
+    lineHeight: 1.5,
+    transition: "color 0.25s",
+  },
+};
 
 // ─── Sidebar config ───────────────────────────────────────────────────────────
 
@@ -157,6 +439,9 @@ export default function DashboardLayout({ user, onLogout, children, activePage, 
         .db-sidebar-scroll::-webkit-scrollbar { width: 4px; }
         .db-sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
         .db-sidebar-scroll::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
+        .db-notif-list::-webkit-scrollbar { width: 4px; }
+        .db-notif-list::-webkit-scrollbar-track { background: transparent; }
+        .db-notif-list::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 4px; }
       `}</style>
 
       {/* ── Background ── */}
@@ -229,6 +514,9 @@ export default function DashboardLayout({ user, onLogout, children, activePage, 
 
           {/* Settings */}
           <SettingsMenu onShowGuide={() => onShowGuide?.(true)} />
+
+          {/* Notification */}
+          <NotificationPanel onNavigate={onNavigate} />
 
           {/* Logout */}
           <button
