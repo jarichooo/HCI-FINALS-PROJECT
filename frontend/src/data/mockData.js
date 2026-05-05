@@ -6,12 +6,14 @@ export const mockStudents = [
     password: "student123",
     name: "Juan Dela Cruz",
     email: "jdelacruz@educore.edu.ph",
+    firstLogin: true,
   },
   {
     studentId: "2022-00456",
     password: "pass456",
     name: "Maria Santos",
     email: "msantos@educore.edu.ph",
+    firstLogin: true,
   },
 ];
 

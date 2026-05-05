@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTheme } from "../context/ThemeContext";
 import { useEffect, useRef } from "react";
+import SettingsMenu from "./SettingsMenu";
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -23,14 +24,6 @@ const MoonIcon = () => (
   <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
     stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
-  </svg>
-);
-
-const SettingsIcon = () => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill="none"
-    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="3" />
-    <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
   </svg>
 );
 
@@ -90,7 +83,7 @@ const REPORTS = [
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function DashboardLayout({ user, onLogout, children, activePage, onNavigate }) {
+export default function DashboardLayout({ user, onLogout, children, activePage, onNavigate, onShowGuide }) {
   const { isDark, toggleTheme } = useTheme();
   const [activeTab, setActiveTab]       = useState("transactions");
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -174,7 +167,7 @@ export default function DashboardLayout({ user, onLogout, children, activePage, 
       <header style={styles.header} className="db-root">
 
         {/* Left: user info */}
-        <div style={styles.userBtnWrapper} ref={profileDropdownRef}>
+        <div style={styles.userBtnWrapper} ref={profileDropdownRef} data-guide="profile">
           <button 
             className="db-user-btn" 
             style={styles.userBtn}
@@ -235,9 +228,7 @@ export default function DashboardLayout({ user, onLogout, children, activePage, 
           </button>
 
           {/* Settings */}
-          <button className="db-icon-btn" style={styles.iconBtn} title="Settings">
-            <SettingsIcon />
-          </button>
+          <SettingsMenu onShowGuide={() => onShowGuide?.(true)} />
 
           {/* Logout */}
           <button
@@ -258,7 +249,7 @@ export default function DashboardLayout({ user, onLogout, children, activePage, 
         <aside style={styles.sidebar} className="db-sidebar db-sidebar-scroll">
 
           {/* Transactions / Reports tab */}
-          <div style={styles.tabRow}>
+          <div style={styles.tabRow} data-guide="tabs">
             {["transactions", "reports"].map((tab) => (
               <button
                 key={tab}
@@ -275,7 +266,7 @@ export default function DashboardLayout({ user, onLogout, children, activePage, 
           </div>
 
           {/* Nav groups */}
-          <nav style={styles.nav}>
+          <nav style={styles.nav} data-guide="sidebar">
             {navGroups.map((group) => (
               <div key={group.group} style={styles.navGroup}>
                 <p style={styles.navGroupLabel}>{group.group}</p>
