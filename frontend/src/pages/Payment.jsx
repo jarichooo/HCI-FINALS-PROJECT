@@ -1,14 +1,14 @@
-import SkeletonPage, { SkeletonProfileCard, SkeletonFormCard } from "../components/SkeletonPage";
+import SkeletonPage, { SkeletonProfileCard, SkeletonTableCard } from "../components/SkeletonPage";
 
-export default function GetTransactionNumber({ onBack }) {
+export default function Payment({ onBack }) {
   return (
     <SkeletonPage
-      title="Get Transaction Number"
-      subtitle="Generate a transaction number for payment"
+      title="Payment"
+      subtitle="View and manage your payment transactions"
       onBack={onBack}
     >
       <SkeletonProfileCard />
-      <SkeletonFormCard />
+      <SkeletonTableCard />
     </SkeletonPage>
   );
 }

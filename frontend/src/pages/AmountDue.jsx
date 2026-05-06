@@ -1,10 +1,10 @@
 import SkeletonPage, { SkeletonProfileCard, SkeletonTableCard } from "../components/SkeletonPage";
 
-export default function AddDropSubject({ onBack }) {
+export default function AmountDue({ onBack }) {
   return (
     <SkeletonPage
-      title="Add / Drop Subject"
-      subtitle="Add or drop subjects from your current enrollment"
+      title="Amount Due"
+      subtitle="View your current account balance and charges"
       onBack={onBack}
     >
       <SkeletonProfileCard />

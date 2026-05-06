@@ -1,14 +1,14 @@
-import SkeletonPage, { SkeletonProfileCard, SkeletonFormCard } from "../components/SkeletonPage";
+import SkeletonPage, { SkeletonProfileCard, SkeletonTableCard } from "../components/SkeletonPage";
 
-export default function Enrollment({ onBack }) {
+export default function AddDropSubject({ onBack }) {
   return (
     <SkeletonPage
-      title="Enrollment"
-      subtitle="Enroll in courses for the current semester"
+      title="Add / Drop Subject"
+      subtitle="Add or drop subjects from your current enrollment"
       onBack={onBack}
     >
       <SkeletonProfileCard />
-      <SkeletonFormCard />
+      <SkeletonTableCard />
     </SkeletonPage>
   );
 }
