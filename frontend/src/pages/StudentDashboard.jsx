@@ -3,9 +3,20 @@ import DashboardLayout from "../components/DashboardLayout";
 import Assessment from "./Assessment";
 import ViewStudentProfile from "./ViewStudentProfile";
 import EditStudentProfile from "./EditStudentProfile";
+import PreEnlistment from "./PreEnlistment";
+import Enrollment from "./Enrollment";
+import AddDropSubject from "./AddDropSubject";
+import AmountDue from "./AmountDue";
+import GetTransactionNumber from "./GetTransactionNumber";
+import Payment from "./Payment";
+import FailedSubjectsPayment from "./FailedSubjectsPayment";
+import TeacherEvaluation from "./TeacherEvaluation";
+import DisableIDCard from "./DisableIDCard";
 import Grades from "./Reports/Grades";
 import StatementOfAccount from "./Reports/StatementOfAccount";
 import TranscriptOfRecords from "./Reports/TranscriptOfRecords";
+import ClassSchedule from "./Reports/ClassSchedule";
+import PaymentHistory from "./Reports/PaymentHistory";
 import GuideTour from "../components/GuideTour";
 
 const WavingHandIcon = () => (
@@ -66,16 +77,38 @@ export default function StudentDashboard({ user, onLogout }) {
       `}</style>
       {activePage === "Assessment" ? (
         <Assessment user={user} onBack={handleBack} />
+      ) : activePage === "Pre-enlistment" ? (
+        <PreEnlistment onBack={handleBack} />
+      ) : activePage === "Enrollment" ? (
+        <Enrollment onBack={handleBack} />
+      ) : activePage === "Add / Drop Subject" ? (
+        <AddDropSubject onBack={handleBack} />
       ) : activePage === "View Student Profile" ? (
         <ViewStudentProfile user={user} onBack={handleBack} />
       ) : activePage === "Edit Student Profile" ? (
         <EditStudentProfile user={user} onBack={handleBack} />
+      ) : activePage === "Amount Due" ? (
+        <AmountDue onBack={handleBack} />
+      ) : activePage === "Get Transaction Number" ? (
+        <GetTransactionNumber onBack={handleBack} />
+      ) : activePage === "Payment" ? (
+        <Payment onBack={handleBack} />
+      ) : activePage === "Failed Subjects Payment" ? (
+        <FailedSubjectsPayment onBack={handleBack} />
+      ) : activePage === "Teacher Evaluation" ? (
+        <TeacherEvaluation onBack={handleBack} />
+      ) : activePage === "Disable ID Card" ? (
+        <DisableIDCard onBack={handleBack} />
       ) : activePage === "Grades" ? (
         <Grades onBack={handleBack} />
       ) : activePage === "Statement of Account" ? (
         <StatementOfAccount onBack={handleBack} />
       ) : activePage === "Transcript of Records" ? (
         <TranscriptOfRecords onBack={handleBack} />
+      ) : activePage === "Class Schedule" ? (
+        <ClassSchedule onBack={handleBack} />
+      ) : activePage === "Payment History" ? (
+        <PaymentHistory onBack={handleBack} />
       ) : (
         <div style={styles.wrapper} className="welcome-content">
           <WavingHandIcon />
